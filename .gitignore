@@ -4,3 +4,4 @@
 /subprojects/*
 !/subprojects/*.wrap
 !subprojects/packagefiles/
+/.vscode/

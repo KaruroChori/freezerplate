@@ -1,4 +1,4 @@
-<!--Typical structure of an environment file to generate custom generators via TE4-->
+<!--Typical structure of an environment file to generate custom generators via freezerplate-->
 <!--This
 is not how the environment files for the final generators must be!-->
 <template name="..." version="..." author="..." lbrace="&lt;?" rbrace="?&gt;">

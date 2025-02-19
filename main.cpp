@@ -1,7 +1,7 @@
 /**
  * @file main.cpp
  * @author karurochari
- * @brief Main unit for the te4 generator
+ * @brief Main unit for the freezerplate generator
  * @date 2025-02-18
  *
  * @copyright Copyright (c) 2025
@@ -314,7 +314,7 @@ extern writer_status_t writer_dir_0(const fs::path &dir, const env_t &env,
 
 int main(int argc, char *argv[]) {
   if (argc < 3) {
-    std::cerr << "Usage: te4 TEMPLATE_DIR OUT_DIR [CONFIG_FILE]\n";
+    std::cerr << "Usage: freezerplate TEMPLATE_DIR OUT_DIR [CONFIG_FILE]\n";
     exit(1);
   }
 

@@ -1,5 +1,5 @@
 project(
-    'te4',
+    'freezerplate',
     ['cpp'],
     version: '0.1.0',
     meson_version: '>= 1.1',
@@ -19,7 +19,7 @@ else
 endif
 
 cli = executable(
-    'te4',
+    'freezerplate',
     ['main.cpp', 'template.cpp'],
     dependencies: [miniz_dep, pugixml_dep],
     link_with: [],
@@ -28,9 +28,9 @@ cli = executable(
     cpp_args: opts
 )
 
-install_man('man/te4.1')
+install_man('man/freezerplate.1')
 
 install_headers(
     [],
-    subdir: 'te4',
+    subdir: 'freezerplate',
 )
