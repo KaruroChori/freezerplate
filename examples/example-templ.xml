@@ -4,11 +4,11 @@ is not how the environment files for the final generators must be!-->
 <project name="example-templ" version="0.1.0" author="karurochari" lbrace="&lt;?" rbrace="?&gt;">
     <steps>
         <step source=".">
-            <skip>
+            <!--<skip>
                 <dir>path1</dir>
                 <type>jpg</type>
                 <type>png</type>
-            </skip>
+            </skip>-->
         </step>
     </steps>
 

@@ -14,6 +14,7 @@
 #include <format>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <set>
 #include <string_view>
 #include <vector>
@@ -64,6 +65,8 @@ const size_t LBRACE_len = strlen(LBRACE);
 const char *RBRACE = "?>";
 const size_t RBRACE_len = strlen(RBRACE);
 
+fs::path BASE;
+
 // File templates
 std::pair<writer_status_t, std::string>
 generate_file_function(std::ostream &out, const fs::path &source) {
@@ -85,11 +88,12 @@ generate_file_function(std::ostream &out, const fs::path &source) {
   std::string name = std::format("writer_file_{}", counter++);
   out << std::format(
       "writer_status_t {}(const fs::path& dir, const env_t& env, const "
-      "std::set<fs::path>& exclude={{}} /*not used*/){{\n",
+      "std::set<fs::path>& exclude={{}} /*not used*/, const std::string& _name "
+      "= {{}} /*not used*/){{\n",
       name);
   out << std::format(
       R"(struct init_t{{ init_t(){{fs_tree.emplace("{}",{});}} }} static init;)",
-      escape_c_str(source), name);
+      escape_c_str(fs::relative(source, BASE)), name);
   out << std::format("static constexpr int perms = {};",
                      (int)fs::status(source).permissions());
   out << std::format("static constexpr const char* name  = \"{}\";\n",
@@ -187,11 +191,12 @@ generate_raw_function(std::ostream &out, const fs::path &source) {
   std::string name = std::format("writer_raw_{}", counter++);
   out << std::format(
       "writer_status_t {}(const fs::path& dir, const env_t& env, const "
-      "std::set<fs::path>& exclude={{}} /*not used*/){{\n",
+      "std::set<fs::path>& exclude={{}} /*not used*/, const std::string& _name "
+      "= {{}} /*not used*/){{\n",
       name);
   out << std::format(
       R"(struct init_t{{ init_t(){{fs_tree.emplace("{}",{});}} }} static init;)",
-      escape_c_str(source), name);
+      escape_c_str(fs::relative(source, BASE)), name);
   out << std::format("static constexpr int perms = {};",
                      (int)fs::status(source).permissions());
   out << std::format("static constexpr const char* name  = \"{}\";\n",
@@ -237,10 +242,14 @@ generate_link_function(std::ostream &out, const fs::path &source) {
   std::string name = std::format("writer_link_{}", counter++);
   out << std::format(
       "writer_status_t {}(const fs::path& dir, const env_t& env, const "
-      "std::set<fs::path>& exclude={{}} /*not used*/){{\n",
+      "std::set<fs::path>& exclude={{}} /*not used*/,  const std::string& "
+      "_name = {{}} /*not used*/){{\n",
       name);
   out << std::format("static constexpr int perms = {};",
                      (int)fs::status(source).permissions());
+  out << std::format(
+      R"(struct init_t{{ init_t(){{fs_tree.emplace("{}",{});}} }} static init;)",
+      escape_c_str(fs::relative(source, BASE)), name);
   out << std::format("static constexpr const char* name  = \"{}\";\n",
                      escape_c_str(source.filename()));
   out << std::format("fs::path file = dir / name;\n");
@@ -318,6 +327,9 @@ generate_folder_function(std::ostream &out, const fs::path &source,
       name);
   out << std::format("static constexpr int perms = {};",
                      (int)fs::status(source).permissions());
+  out << std::format(
+      R"(struct init_t{{ init_t(){{fs_tree.emplace("{}",{});}} }} static init;)",
+      escape_c_str(fs::relative(source, BASE)), name);
   out << std::format("static constexpr const char* name  = \"{}\";\n",
                      escape_c_str(source.filename()));
   out << std::format(
@@ -337,6 +349,12 @@ generate_folder_function(std::ostream &out, const fs::path &source,
 extern writer_status_t writer_dir_0(const fs::path &dir, const env_t &env,
                                     const std::set<fs::path> &exclude = {},
                                     const std::string &_name = {});
+
+extern std::map<fs::path,
+                writer_status_t (*)(const fs::path &dir, const env_t &env,
+                                    const std::set<fs::path> &exclude,
+                                    const std::string &_name)>
+    fs_tree;
 
 int main(int argc, char *argv[]) {
   if (argc < 3) {
@@ -487,37 +505,51 @@ typedef enum {
 
 typedef pugi::xml_node env_t;
 
-std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude)> fs_tree;
+std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude, const std::string& _name)> fs_tree;
 
 )";
 
-    // TODO: argv[3] should have a list of elements to skip.
-    generate_folder_function(out, argv[1], {});
+    pugi::xml_document doc = {};
+    if (argc >= 4 && fs::exists(argv[3]))
+      doc.load_file(argv[3]);
+    else
+      doc.load_string("<project></project>");
+
+    BASE = argv[1];
+
+    generate_folder_function(out, BASE, {});
     out <<
         R"(
 #ifndef TE4_INTERNAL
 int main(int argc, const char* argv[]){
     if(argc<3)exit(1);
     pugi::xml_document doc;
-    doc.load_file((fs::path(getenv("PWD"))/argv[2]).c_str());
+    doc.load_file(/*(fs::path(getenv("PWD"))/argv[2]).c_str()*/argv[2]);
 
     //Default entry point. Change by adding exclusions and further calls if you need to change its behaviour
-    writer_dir_0(argv[1],doc.root());
+    )";
+
+    for (auto &entry : doc.child("project").child("steps").children()) {
+      auto src = entry.attribute("source").as_string(nullptr);
+      if (src != nullptr) {
+        out << std::format(
+            R"(fs_tree["{}"](argv[1], doc.root(), {{}}, {{}});\n)",
+            escape_c_str(src));
+      }
+    }
+    if (!(doc.child("project").child("steps"))) {
+      out << R"(writer_dir_0(argv[1], doc.root());)" << "\n";
+    }
+
+    writer_dir_0(argv[2], doc.root());
+
+    out << R"(
     return 0;
 }
 #endif
 )";
     out.close();
   }
-
-  pugi::xml_document doc = {};
-  if (argc >= 4 && fs::exists(argv[3]))
-    doc.load_file(argv[3]);
-  else
-    doc.load_string("<root></root>");
-
-  // Use the bootstrapped template to add files for the generator itself :D
-  writer_dir_0(argv[2], doc.root(), {});
 
   return 0;
 }
