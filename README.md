@@ -5,6 +5,7 @@
 # 🥶🥏
 
 ## What's that?
+
 Everyone loves templates: the let us reuse the same boilerplate code over and over, for each project we start and never finish.  
 Just think how frustrating it would be to bake cookies and having to manually shape each one of them.  
 However, in most scenarios, a naive copy & paste of files is not the best approach.  
@@ -17,13 +18,15 @@ To generate the initial C++ code, a folder containing (recursively) all the boil
 
 ### Can I eat it?
 
-I would advise against.  
+I would advise against.
 
 ### Features
+
 - Optional compression for files. The generated template builders can act as glorified `tar.gz` archives, with the additional spice of arbitrary code execution.
 - XML environment file passed to each template entry to customize the final output at runtime.
 
 ### Non Features
+
 - Binary files like sqlite databases or images can be tracked and added, but they cannot be reasonably changed by freezerplate. I would suggest generating them based on some post-script.
 
 ## General workflow?
@@ -38,7 +41,8 @@ I would advise against.
 
 > [!TIP]  
 > Did you know `freezerplate` uses `freezerplate` itself to generate most of the boilerplate for the newly generated templates builders?  
-> Why am I even asking, it is not like you knew about this project up til 5 minutes ago.  
+> Why am I even asking, it is not like you knew about this project up til 5 minutes ago.
 
-For example, `freezerplate ./template/ ./dist/` will generate in `./dist` all files including the `main.cpp` which is renamed `template.cpp` in the root directory.
-
+For example, `freezerplate ./template-folder/ ./dist/` will generate in `./dist` all files needed to compile the template builder based on files from `./template-folder/`.  
+You can then enter in `./dist` run `./build.sh` and that is your ready-to-use builder for `./template-folder/`.  
+Freezerplate also accepts the path of an environment XML file as third argument, which is used to setup information for your custom template builder.

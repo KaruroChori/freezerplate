@@ -7,3 +7,4 @@
 - [x] Generate index of files (so to call them with a decent and stable name)
 - [x] Added support for raw files not needing templating
 - [ ] Introduce "custom steps" as part of the XML used to generate the parser instead of requiring manual work.
+- [ ] Permissions from the original file are not preserved. Well, do it.

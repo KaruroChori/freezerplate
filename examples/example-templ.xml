@@ -1,7 +1,7 @@
 <!--Typical structure of an environment file to generate custom generators via freezerplate-->
 <!--This
 is not how the environment files for the final generators must be!-->
-<template name="..." version="..." author="..." lbrace="&lt;?" rbrace="?&gt;">
+<project name="example-templ" version="0.1.0" author="karurochari" lbrace="&lt;?" rbrace="?&gt;">
     <steps>
         <step source=".">
             <skip>
@@ -14,4 +14,4 @@ is not how the environment files for the final generators must be!-->
 
     <description></description>
     <licence></licence>
-</template>
+</project>
