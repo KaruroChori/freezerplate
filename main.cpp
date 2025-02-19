@@ -90,6 +90,8 @@ generate_file_function(std::ostream &out, const fs::path &source) {
   out << std::format(
       R"(struct init_t{{ init_t(){{fs_tree.emplace("{}",{});}} }} static init;)",
       escape_c_str(source), name);
+  out << std::format("static constexpr int perms = {};",
+                     (int)fs::status(source).permissions());
   out << std::format("static constexpr const char* name  = \"{}\";\n",
                      escape_c_str(source.filename()));
   out << std::format("fs::path file = dir / name;\n");
@@ -101,13 +103,16 @@ generate_file_function(std::ostream &out, const fs::path &source) {
   bool mode = 0;
   uint base = 0;
   uint offset = 0;
-  for (; offset < buffer.size(); offset++) {
+  for (; offset < buffer.size();) {
     if (mode == 0 &&
-        ((buffer.size() - offset >= 2 &&
+        ((buffer.size() - offset >= LBRACE_len &&
           memcmp(buffer.data() + offset, LBRACE, LBRACE_len) == 0) ||
          offset == buffer.size() - 1)) {
       out << "{";
       out << "constexpr const uint8_t tmp[] = {";
+      // To get the last one
+      if (offset == buffer.size() - 1)
+        offset++;
 #ifdef TE4_COMPRESS
       auto data = deflate(std::basic_string_view<uint8_t>(
           buffer.data() + base, buffer.data() + offset));
@@ -129,24 +134,35 @@ generate_file_function(std::ostream &out, const fs::path &source) {
     out.write((const char*)dtmp.data(),dtmp.size());
 })";
       mode = 1;
-      if (offset != buffer.size() - 1)
-        offset += 2;
+      if (offset < buffer.size())
+        offset += LBRACE_len;
+      else
+        break;
       base = offset;
       continue;
     } else if (mode == 1 &&
-               ((buffer.size() - offset >= 2 &&
+               ((buffer.size() - offset >= RBRACE_len &&
                  memcmp(buffer.data() + offset, RBRACE, RBRACE_len) == 0) ||
                 offset == buffer.size() - 1)) {
+      // To get the last one
+      if (offset == buffer.size() - 1)
+        offset++;
       out.write((const char *)buffer.data() + base, offset - base);
 
       mode = 0;
-      if (offset != buffer.size() - 1)
-        offset += 2;
+      if (offset < buffer.size())
+        offset += RBRACE_len;
+      else
+        break;
       base = offset;
       continue;
+    } else {
+      offset++;
     }
   }
-  out << "out.close();\nreturn WRITER_STATUS_OK;\n}\n";
+  out << "out.close();\n"
+         "fs::permissions(file,fs::perms(perms), fs::perm_options::replace);\n"
+         "return WRITER_STATUS_OK;\n}\n";
   return {WRITER_STATUS_OK, name};
 }
 
@@ -176,6 +192,8 @@ generate_raw_function(std::ostream &out, const fs::path &source) {
   out << std::format(
       R"(struct init_t{{ init_t(){{fs_tree.emplace("{}",{});}} }} static init;)",
       escape_c_str(source), name);
+  out << std::format("static constexpr int perms = {};",
+                     (int)fs::status(source).permissions());
   out << std::format("static constexpr const char* name  = \"{}\";\n",
                      escape_c_str(source.filename()));
   out << std::format("fs::path file = dir / name;\n");
@@ -185,21 +203,20 @@ generate_raw_function(std::ostream &out, const fs::path &source) {
       << name << ".\\n\";return WRITER_STATUS_SKIP;}\n";
   out << "std::ofstream out(file, std::ios::binary);\n";
 
-      out << "{";
-      out << "constexpr const uint8_t tmp[] = {";
+  out << "{";
+  out << "constexpr const uint8_t tmp[] = {";
 #ifdef TE4_COMPRESS
-      auto data = deflate(std::basic_string_view<uint8_t>(
-          buffer.begin(), buffer.end()));
+  auto data =
+      deflate(std::basic_string_view<uint8_t>(buffer.begin(), buffer.end()));
 #else
-      auto data = std::basic_string_view<uint8_t>(buffer.begin(),
-                                                  buffer.end());
+  auto data = std::basic_string_view<uint8_t>(buffer.begin(), buffer.end());
 #endif
-      for (auto c : data) {
-        auto tmp = std::format("{:#X},", c);
-        out.write(tmp.data(), tmp.size());
-      }
-      out <<
-          R"(};
+  for (auto c : data) {
+    auto tmp = std::format("{:#X},", c);
+    out.write(tmp.data(), tmp.size());
+  }
+  out <<
+      R"(};
 #ifdef TE4_COMPRESS
     auto dtmp = inflate({tmp,sizeof(tmp)});
 #else
@@ -208,10 +225,11 @@ generate_raw_function(std::ostream &out, const fs::path &source) {
     out.write((const char*)dtmp.data(),dtmp.size());
 })";
 
-  out << "out.close();\nreturn WRITER_STATUS_OK;\n}\n";
+  out << "out.close();\n"
+         "fs::permissions(file,fs::perms(perms), fs::perm_options::replace);\n"
+         "return WRITER_STATUS_OK;\n}\n";
   return {WRITER_STATUS_OK, name};
 }
-
 
 std::pair<writer_status_t, std::string>
 generate_link_function(std::ostream &out, const fs::path &source) {
@@ -221,6 +239,8 @@ generate_link_function(std::ostream &out, const fs::path &source) {
       "writer_status_t {}(const fs::path& dir, const env_t& env, const "
       "std::set<fs::path>& exclude={{}} /*not used*/){{\n",
       name);
+  out << std::format("static constexpr int perms = {};",
+                     (int)fs::status(source).permissions());
   out << std::format("static constexpr const char* name  = \"{}\";\n",
                      escape_c_str(source.filename()));
   out << std::format("fs::path file = dir / name;\n");
@@ -231,14 +251,16 @@ generate_link_function(std::ostream &out, const fs::path &source) {
   out << "auto t = \""
       << escape_c_str(fs::read_symlink(source).lexically_normal().string())
       << "\";\n"; // TODO: escape
-  out << "fs::create_symlink(t,file);\nreturn WRITER_STATUS_OK;\n}\n";
+  out << "fs::create_symlink(t,file);\n"
+         "fs::permissions(file,fs::perms(perms), fs::perm_options::replace);\n"
+         "return WRITER_STATUS_OK;\n}\n";
   return {WRITER_STATUS_OK, name};
 }
 
 // Function to generate folder functions
 std::pair<writer_status_t, std::string>
 generate_folder_function(std::ostream &out, const fs::path &source,
-                         const std::set<fs::path> &exclude = {}, 
+                         const std::set<fs::path> &exclude = {},
                          const std::set<fs::path> &exclude_ext = {}) {
   static int counter = 0;
   std::string name = std::format("writer_dir_{}", counter++);
@@ -274,7 +296,7 @@ generate_folder_function(std::ostream &out, const fs::path &source,
     }
 
     // Skip templating for selected extensions
-    if (exclude_ext.find(entry.path().extension())!=exclude_ext.end()){
+    if (exclude_ext.find(entry.path().extension()) != exclude_ext.end()) {
       auto t = generate_raw_function(out, entry);
       if (t.first == WRITER_STATUS_ERROR)
         return {WRITER_STATUS_ERROR, ""};
@@ -294,6 +316,8 @@ generate_folder_function(std::ostream &out, const fs::path &source,
       "writer_status_t {}(const fs::path& dir, const env_t& env, const "
       "std::set<fs::path>& exclude={{}}, const std::string& _name = {{}}){{\n",
       name);
+  out << std::format("static constexpr int perms = {};",
+                     (int)fs::status(source).permissions());
   out << std::format("static constexpr const char* name  = \"{}\";\n",
                      escape_c_str(source.filename()));
   out << std::format(
@@ -303,7 +327,9 @@ generate_folder_function(std::ostream &out, const fs::path &source,
     out << std::format(
         "if(exclude.find(file)==exclude.end()){}(file, env, exclude);\n", fn);
   }
-  out << "return WRITER_STATUS_OK;\n}\n";
+
+  out << "fs::permissions(file,fs::perms(perms), fs::perm_options::replace);\n"
+      << "return WRITER_STATUS_OK;\n}\n";
 
   return {WRITER_STATUS_OK, name};
 }

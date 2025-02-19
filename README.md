@@ -22,6 +22,9 @@ I would advise against.
 
 ### Features
 
+- Support for nested folders.
+- Support for symbolic links.
+- Support for raw files (binary files can be written without templating).
 - Optional compression for files. The generated template builders can act as glorified `tar.gz` archives, with the additional spice of arbitrary code execution.
 - XML environment file passed to each template entry to customize the final output at runtime.
 
