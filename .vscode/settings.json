@@ -1,0 +1,4 @@
+{
+    "C_Cpp.default.compileCommands": "/home/checkroom/Projects/te4/build/compile_commands.json",
+    "C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild"
+}

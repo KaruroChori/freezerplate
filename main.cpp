@@ -64,10 +64,9 @@ const size_t LBRACE_len = strlen(LBRACE);
 const char *RBRACE = "?>";
 const size_t RBRACE_len = strlen(RBRACE);
 
-// Function to generate writer functions
+// File templates
 std::pair<writer_status_t, std::string>
-generate_file_function(std::ostream &out, const fs::path &source,
-                       const std::set<fs::path> &exclude = {}) {
+generate_file_function(std::ostream &out, const fs::path &source) {
   static int counter = 0;
 
   // Read file contents
@@ -113,8 +112,8 @@ generate_file_function(std::ostream &out, const fs::path &source,
       auto data = deflate(std::basic_string_view<uint8_t>(
           buffer.data() + base, buffer.data() + offset));
 #else
-      auto data = std::basic_string_view<uint8_t>(source.data() + base,
-                                                  source.data() + offset);
+      auto data = std::basic_string_view<uint8_t>(buffer.data() + base,
+                                                  buffer.data() + offset);
 #endif
       for (auto c : data) {
         auto tmp = std::format("{:#X},", c);
@@ -151,9 +150,71 @@ generate_file_function(std::ostream &out, const fs::path &source,
   return {WRITER_STATUS_OK, name};
 }
 
+// Mostly binary files which should not be edited but still copied.
 std::pair<writer_status_t, std::string>
-generate_link_function(std::ostream &out, const fs::path &source,
-                       const std::set<fs::path> &exclude = {}) {
+generate_raw_function(std::ostream &out, const fs::path &source) {
+  static int counter = 0;
+
+  // Read file contents
+  std::ifstream file(source, std::ios::binary | std::ios::ate);
+  if (!file.is_open()) {
+    throw std::runtime_error("Could not open file: " + source.string());
+  }
+
+  // Tecchnically not thread safe. But it will be fine
+  size_t file_size = file.tellg();
+  std::vector<unsigned char> buffer(file_size);
+  file.seekg(0);
+  file.read((char *)buffer.data(), file_size);
+  file.close();
+
+  std::string name = std::format("writer_raw_{}", counter++);
+  out << std::format(
+      "writer_status_t {}(const fs::path& dir, const env_t& env, const "
+      "std::set<fs::path>& exclude={{}} /*not used*/){{\n",
+      name);
+  out << std::format(
+      R"(struct init_t{{ init_t(){{fs_tree.emplace("{}",{});}} }} static init;)",
+      escape_c_str(source), name);
+  out << std::format("static constexpr const char* name  = \"{}\";\n",
+                     escape_c_str(source.filename()));
+  out << std::format("fs::path file = dir / name;\n");
+  out << "if(fs::exists(file) && no_override){std::cerr<<\"File \"<<file<<\" "
+         "already there. "
+         "It will not be overwritten by rule "
+      << name << ".\\n\";return WRITER_STATUS_SKIP;}\n";
+  out << "std::ofstream out(file, std::ios::binary);\n";
+
+      out << "{";
+      out << "constexpr const uint8_t tmp[] = {";
+#ifdef TE4_COMPRESS
+      auto data = deflate(std::basic_string_view<uint8_t>(
+          buffer.begin(), buffer.end()));
+#else
+      auto data = std::basic_string_view<uint8_t>(buffer.begin(),
+                                                  buffer.end());
+#endif
+      for (auto c : data) {
+        auto tmp = std::format("{:#X},", c);
+        out.write(tmp.data(), tmp.size());
+      }
+      out <<
+          R"(};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+})";
+
+  out << "out.close();\nreturn WRITER_STATUS_OK;\n}\n";
+  return {WRITER_STATUS_OK, name};
+}
+
+
+std::pair<writer_status_t, std::string>
+generate_link_function(std::ostream &out, const fs::path &source) {
   static int counter = 0;
   std::string name = std::format("writer_link_{}", counter++);
   out << std::format(
@@ -177,7 +238,8 @@ generate_link_function(std::ostream &out, const fs::path &source,
 // Function to generate folder functions
 std::pair<writer_status_t, std::string>
 generate_folder_function(std::ostream &out, const fs::path &source,
-                         const std::set<fs::path> &exclude = {}) {
+                         const std::set<fs::path> &exclude = {}, 
+                         const std::set<fs::path> &exclude_ext = {}) {
   static int counter = 0;
   std::string name = std::format("writer_dir_{}", counter++);
   std::vector<std::string> callthese;
@@ -204,6 +266,16 @@ generate_folder_function(std::ostream &out, const fs::path &source,
     // Folders are ignored in this context.
     if (entry.is_directory()) {
       auto t = generate_folder_function(out, entry, exclude);
+      if (t.first == WRITER_STATUS_ERROR)
+        return {WRITER_STATUS_ERROR, ""};
+      else
+        callthese.push_back(t.second);
+      continue;
+    }
+
+    // Skip templating for selected extensions
+    if (exclude_ext.find(entry.path().extension())!=exclude_ext.end()){
+      auto t = generate_raw_function(out, entry);
       if (t.first == WRITER_STATUS_ERROR)
         return {WRITER_STATUS_ERROR, ""};
       else

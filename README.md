@@ -1,25 +1,41 @@
 > [!IMPORTANT]  
-> It works, but there is near-zero documentation on how to make it possible.
+> It works, but its documentation is severely lacking!
+> I am currently working on proper docs and better examples.
 
-A generator of generators for portable project templates.  
-Templates are good to avoid writing the same boilerplate code over and over each time.  
-But what to do when you need some form of parametrization for those boilerplates? How to avoid manually updating all instances in which your project name should be?  
-Fret not! TE4 is the unlikely solution to a problem no one knew they had.
+## What's that?
+Everyone loves templates: the let us reuse the same boilerplate code over and over, for each project we start and never finish.  
+Just think how frustrating it would be to bake cookies and having to manually shape each one of them.  
+However, in most scenarios, a naive copy & paste of files is not the best approach.  
+We might need to place our project name in several spots, or pre-generate multiple subfolders with the same pattern based on information which is application specific, only know when initializing a new project.  
+Not having a way to properly express this parametrization can be frustrating and time-consuming.  
+Fret not! TE4 is the unlikely solution to a problem no one knew they had!
 
-Basically, it allows you to define a template directory with all files inside, and it creates a single c++ file that once compiled is able to fully replicate that template structure allowing for an environment file to parametrize the output.
+TE4 allows you to automatically generate the C++ code of a program which can fully build your boilerplate just passing the destination folder and the environment file with the specific parametrization.  
+To generate the initial C++ code, a folder containing (recursively) all the boilerplate files is needed, but those will be embedded in the source itself, so the actual distribution of the template initializer is just as simple as a single executable.
+
+### Can I eat it?
+
+I would advise against.  
+
+### Features
+- Optional compression for files. The generated template builders can act as glorified `tar.gz` archives, with the additional spice of arbitrary code execution.
+- XML environment file passed to each template entry to customize the final output at runtime.
+
+### Non Features
+- Binary files like sqlite databases or images can be tracked and added, but they cannot be reasonably changed by TE4. I would suggest generating them based on some post-script.
 
 ## General workflow?
 
-- Add all your template files to a folder (you can nest as much as you want, or you stack is depleted)
-- Introduce code blocks `<?` `?>` embedding any arbitrary code within your files. You have also access to an XML environment file to use as you wish.
+- Add all your template files to a folder (you can nest as much as you want, or as much as your stack can take, whichever gives up first)
+- Introduce code blocks `<?` `?>` embedding any arbitrary C++ code within your files. You are given access to an XML environment file to use as you wish.
 - Compile your templates in a standalone (and optionally compressed) generator.
 - (optional) Customize the main of the generated file if needed.
 - Profit!
 
-## Examples
+### Usage
 
 > [!TIP]  
-> `TE4` uses `TE4` to generate most of the boilerplate for the newly generated generators.  
-> Like inception but for boring people wasting too much time in front of a screen.
+> Did you know `TE4` uses `TE4` itself to generate most of the boilerplate for the newly generated templates builders?  
+> Why am I even asking, it is not like you knew about this project up til 5 minutes ago.  
 
-`te4 ./template/ ./dist/` will generate in `./dist` all files including the `main.cpp` which is renamed `template.cpp` in the root directory.
+For example, `te4 ./template/ ./dist/` will generate in `./dist` all files including the `main.cpp` which is renamed `template.cpp` in the root directory.
