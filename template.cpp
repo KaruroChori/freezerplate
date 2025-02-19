@@ -9,6 +9,7 @@
 #include <fstream>
 #include <fstream>
 #include <set>
+#include <map>
 #include <vector>
 
 #include <pugixml.hpp>
@@ -34,6 +35,8 @@ decompressedData.resize(decompressedSize);
 return decompressedData;
 }
 #endif
+
+namespace fs = std::filesystem;
 
 bool no_override=true;
 
@@ -117,10 +120,6 @@ std::string escape_xml_str(const std::string &input) {
 #define WRITE_MESON(x) {std::string tmp = escape_meson_str(x); out.write(tmp.data(),tmp.size());}
 #define WRITE_XML(x) {std::string tmp = escape_xml_str(x); out.write(tmp.data(),tmp.size());}
 
-//TODO: Add escaped versions for different scenarios
-
-namespace fs = std::filesystem;
-
 typedef enum {
     WRITER_STATUS_ERROR,
     WRITER_STATUS_OK,
@@ -129,8 +128,10 @@ typedef enum {
 
 typedef pugi::xml_node env_t;
 
+std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude)> fs_tree;
+
 writer_status_t writer_file_0(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/){
-static constexpr const char* name  = "build.sh";
+struct init_t{ init_t(){fs_tree.emplace("./template/build.sh",writer_file_0);} } static init;static constexpr const char* name  = "build.sh";
 fs::path file = dir / name;
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_0.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -145,7 +146,7 @@ std::ofstream out(file, std::ios::binary);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_1(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/){
-static constexpr const char* name  = "LICENCE.md";
+struct init_t{ init_t(){fs_tree.emplace("./template/LICENCE.md",writer_file_1);} } static init;static constexpr const char* name  = "LICENCE.md";
 fs::path file = dir / name;
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_1.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -153,7 +154,7 @@ out.close();
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_2(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/){
-static constexpr const char* name  = ".gitignore";
+struct init_t{ init_t(){fs_tree.emplace("./template/.gitignore",writer_file_2);} } static init;static constexpr const char* name  = ".gitignore";
 fs::path file = dir / name;
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_2.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -168,7 +169,7 @@ std::ofstream out(file, std::ios::binary);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_3(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/){
-static constexpr const char* name  = "meson.build";
+struct init_t{ init_t(){fs_tree.emplace("./template/meson.build",writer_file_3);} } static init;static constexpr const char* name  = "meson.build";
 fs::path file = dir / name;
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_3.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -218,7 +219,7 @@ std::ofstream out(file, std::ios::binary);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_4(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/){
-static constexpr const char* name  = "README.md";
+struct init_t{ init_t(){fs_tree.emplace("./template/README.md",writer_file_4);} } static init;static constexpr const char* name  = "README.md";
 fs::path file = dir / name;
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_4.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -226,7 +227,7 @@ out.close();
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_5(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/){
-static constexpr const char* name  = "pugixml.wrap";
+struct init_t{ init_t(){fs_tree.emplace("./template/subprojects/pugixml.wrap",writer_file_5);} } static init;static constexpr const char* name  = "pugixml.wrap";
 fs::path file = dir / name;
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_5.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -241,7 +242,7 @@ std::ofstream out(file, std::ios::binary);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_6(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/){
-static constexpr const char* name  = "miniz.wrap";
+struct init_t{ init_t(){fs_tree.emplace("./template/subprojects/miniz.wrap",writer_file_6);} } static init;static constexpr const char* name  = "miniz.wrap";
 fs::path file = dir / name;
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_6.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -264,7 +265,7 @@ if(exclude.find(file)==exclude.end())writer_file_6(file, env, exclude);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_7(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/){
-static constexpr const char* name  = "default.ini";
+struct init_t{ init_t(){fs_tree.emplace("./template/platforms/default.ini",writer_file_7);} } static init;static constexpr const char* name  = "default.ini";
 fs::path file = dir / name;
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_7.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);

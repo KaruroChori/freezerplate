@@ -66,17 +66,33 @@ const size_t RBRACE_len = strlen(RBRACE);
 
 // Function to generate writer functions
 std::pair<writer_status_t, std::string>
-generate_file_function(std::ostream &out,
-                       std::basic_string_view<uint8_t> source,
-                       std::string filename) {
+generate_file_function(std::ostream &out, const fs::path &source,
+                       const std::set<fs::path> &exclude = {}) {
   static int counter = 0;
+
+  // Read file contents
+  std::ifstream file(source, std::ios::binary | std::ios::ate);
+  if (!file.is_open()) {
+    throw std::runtime_error("Could not open file: " + source.string());
+  }
+
+  // Tecchnically not thread safe. But it will be fine
+  size_t file_size = file.tellg();
+  std::vector<unsigned char> buffer(file_size);
+  file.seekg(0);
+  file.read((char *)buffer.data(), file_size);
+  file.close();
+
   std::string name = std::format("writer_file_{}", counter++);
   out << std::format(
       "writer_status_t {}(const fs::path& dir, const env_t& env, const "
       "std::set<fs::path>& exclude={{}} /*not used*/){{\n",
       name);
+  out << std::format(
+      R"(struct init_t{{ init_t(){{fs_tree.emplace("{}",{});}} }} static init;)",
+      escape_c_str(source), name);
   out << std::format("static constexpr const char* name  = \"{}\";\n",
-                     escape_c_str(filename));
+                     escape_c_str(source.filename()));
   out << std::format("fs::path file = dir / name;\n");
   out << "if(fs::exists(file) && no_override){std::cerr<<\"File \"<<file<<\" "
          "already there. "
@@ -86,16 +102,16 @@ generate_file_function(std::ostream &out,
   bool mode = 0;
   uint base = 0;
   uint offset = 0;
-  for (; offset < source.length(); offset++) {
+  for (; offset < buffer.size(); offset++) {
     if (mode == 0 &&
-        ((source.length() - offset >= 2 &&
-          memcmp(source.data() + offset, LBRACE, LBRACE_len) == 0) ||
-         offset == source.length() - 1)) {
+        ((buffer.size() - offset >= 2 &&
+          memcmp(buffer.data() + offset, LBRACE, LBRACE_len) == 0) ||
+         offset == buffer.size() - 1)) {
       out << "{";
       out << "constexpr const uint8_t tmp[] = {";
 #ifdef TE4_COMPRESS
       auto data = deflate(std::basic_string_view<uint8_t>(
-          source.data() + base, source.data() + offset));
+          buffer.data() + base, buffer.data() + offset));
 #else
       auto data = std::basic_string_view<uint8_t>(source.data() + base,
                                                   source.data() + offset);
@@ -114,18 +130,18 @@ generate_file_function(std::ostream &out,
     out.write((const char*)dtmp.data(),dtmp.size());
 })";
       mode = 1;
-      if (offset != source.length() - 1)
+      if (offset != buffer.size() - 1)
         offset += 2;
       base = offset;
       continue;
     } else if (mode == 1 &&
-               ((source.length() - offset >= 2 &&
-                 memcmp(source.data() + offset, RBRACE, RBRACE_len) == 0) ||
-                offset == source.length() - 1)) {
-      out.write((const char *)source.data() + base, offset - base);
+               ((buffer.size() - offset >= 2 &&
+                 memcmp(buffer.data() + offset, RBRACE, RBRACE_len) == 0) ||
+                offset == buffer.size() - 1)) {
+      out.write((const char *)buffer.data() + base, offset - base);
 
       mode = 0;
-      if (offset != source.length() - 1)
+      if (offset != buffer.size() - 1)
         offset += 2;
       base = offset;
       continue;
@@ -136,7 +152,8 @@ generate_file_function(std::ostream &out,
 }
 
 std::pair<writer_status_t, std::string>
-generate_link_function(std::ostream &out, const fs::path &source) {
+generate_link_function(std::ostream &out, const fs::path &source,
+                       const std::set<fs::path> &exclude = {}) {
   static int counter = 0;
   std::string name = std::format("writer_link_{}", counter++);
   out << std::format(
@@ -170,7 +187,6 @@ generate_folder_function(std::ostream &out, const fs::path &source,
       throw std::runtime_error("Unallowed file type in tempalte dir");
     }
 
-    const fs::path &file_path = entry.path();
     if (exclude.find(entry) != exclude.end()) {
       continue;
     } // Skip unwanted cases of files not to be tracked.
@@ -195,21 +211,7 @@ generate_folder_function(std::ostream &out, const fs::path &source,
       continue;
     }
 
-    // Read file contents
-    std::ifstream file(file_path, std::ios::binary | std::ios::ate);
-    if (!file.is_open()) {
-      throw std::runtime_error("Could not open file: " + file_path.string());
-    }
-
-    // Tecchnically not thread safe. But it will be fine
-    size_t file_size = file.tellg();
-    std::vector<unsigned char> buffer(file_size);
-    file.seekg(0);
-    file.read((char *)buffer.data(), file_size);
-    file.close();
-
-    auto t = generate_file_function(out, {buffer.begin(), buffer.end()},
-                                    entry.path().filename());
+    auto t = generate_file_function(out, entry);
     if (t.first == WRITER_STATUS_ERROR)
       return {WRITER_STATUS_ERROR, ""};
     else
@@ -268,6 +270,7 @@ int main(int argc, char *argv[]) {
 #include <fstream>
 #include <fstream>
 #include <set>
+#include <map>
 #include <vector>
 
 #include <pugixml.hpp>
@@ -293,6 +296,8 @@ decompressedData.resize(decompressedSize);
 return decompressedData;
 }
 #endif
+
+namespace fs = std::filesystem;
 
 bool no_override=true;
 
@@ -376,10 +381,6 @@ std::string escape_xml_str(const std::string &input) {
 #define WRITE_MESON(x) {std::string tmp = escape_meson_str(x); out.write(tmp.data(),tmp.size());}
 #define WRITE_XML(x) {std::string tmp = escape_xml_str(x); out.write(tmp.data(),tmp.size());}
 
-//TODO: Add escaped versions for different scenarios
-
-namespace fs = std::filesystem;
-
 typedef enum {
     WRITER_STATUS_ERROR,
     WRITER_STATUS_OK,
@@ -387,6 +388,8 @@ typedef enum {
 } writer_status_t;
 
 typedef pugi::xml_node env_t;
+
+std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude)> fs_tree;
 
 )";
 

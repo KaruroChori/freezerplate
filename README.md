@@ -13,6 +13,7 @@ Basically, it allows you to define a template directory with all files inside, a
 - Add all your template files to a folder (you can nest as much as you want, or you stack is depleted)
 - Introduce code blocks `<?` `?>` embedding any arbitrary code within your files. You have also access to an XML environment file to use as you wish.
 - Compile your templates in a standalone (and optionally compressed) generator.
+- (optional) Customize the main of the generated file if needed.
 - Profit!
 
 ## Examples
