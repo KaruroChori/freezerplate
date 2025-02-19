@@ -1,5 +1,7 @@
+<? auto proj_name = env.child("project").attribute("name").as_string("undefined"); ?>
+
 project(
-    '<?WRITE(env.child("project").attribute("name").as_string("undefined"))?>',
+    '<?WRITE(proj_name)?>',
     ['cpp'],
     version: '0.1.0',
     meson_version: '>= 1.1',
@@ -11,39 +13,19 @@ add_global_arguments(['-Wno-unused-function'], language: 'c')
 
 miniz_dep = dependency('miniz')
 
-if get_option('compress')
-    opts = ['-DTE4_COMPRESS']
-else 
-    opts=[]
-endif
 
 cli = executable(
-    'te4',
+    '<?WRITE(proj_name)?>',
     ['main.cpp'],
-    dependencies: [miniz_dep],
+    dependencies: [miniz_dep,pugixml_dep],
     link_with: [],
     include_directories: [],
     install: true,
-    cpp_args: opts
 )
 
-install_man('man/te4.1')
+install_man('man/<?WRITE(proj_name)?>.1')
 
 install_headers(
     [],
-    subdir: 'te4',
+    subdir: '<?WRITE(proj_name)?>',
 )
-
-#if get_option('tests')
-#    subdir(['./test/'])
-#endif
-
-#subdir(['./metadata/'])
-
-#pconf = import('pkgconfig')
-#pconf.generate(
-#    te4_lib,
-#    description: 'portable project template generator',
-#    url: 'https://github.com/KaruroChori/te4',
-#    version: meson.project_version(),
-#)
