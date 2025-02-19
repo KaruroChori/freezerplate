@@ -1,6 +1,10 @@
 <!--Typical structure of an environment file to generate custom generators via TE4-->
 <!--This is not how the environment files for the final generators must be!-->
-<template name="..." version="..." author="...">
+<template name="..." version="..." author="..." lbrace="&lt;?" rbrace="?&gt;">
+    <skip>
+        <entry>path1</entry>
+        <entry>path2</entry>
+    </skip>
     <description></description>
     <licence></licence>
 </template>

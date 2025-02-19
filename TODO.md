@@ -1,4 +1,6 @@
-- [ ] Make `<?` and `?>` user configurable
+- [ ] Make `<?` and `?>` user configurable (via XML file)
+- [ ] Accept skippable files/directories (via XML file)
 - [ ] Macro to simplify access to the XML document
 - [ ] Add man pages
-- [ ] Flag to force override
+- [x] Flag to force override during generation
+- [x] Initial support for escaping in some classes of languages

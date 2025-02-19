@@ -39,6 +39,11 @@ static std::vector<uint8_t> deflate(std::basic_string_view<uint8_t> data) {
 }
 #endif
 
+extern std::string escape_c_str(const std::string &input);
+extern std::string escape_meson_str(const std::string &input);
+extern std::string escape_xml_str(const std::string &input);
+extern bool no_override;
+
 namespace fs = std::filesystem;
 
 // Define the writer status enumeration
@@ -71,9 +76,10 @@ generate_file_function(std::ostream &out,
       "std::set<fs::path>& exclude={{}} /*not used*/){{\n",
       name);
   out << std::format("static constexpr const char* name  = \"{}\";\n",
-                     filename.c_str()); // TODO: escape
+                     escape_c_str(filename));
   out << std::format("fs::path file = dir / name;\n");
-  out << "if(fs::exists(file)){std::cerr<<\"File \"<<file<<\" already there. "
+  out << "if(fs::exists(file) && no_override){std::cerr<<\"File \"<<file<<\" "
+         "already there. "
          "It will not be overwritten by rule "
       << name << ".\\n\";return WRITER_STATUS_SKIP;}\n";
   out << "std::ofstream out(file, std::ios::binary);\n";
@@ -138,12 +144,14 @@ generate_link_function(std::ostream &out, const fs::path &source) {
       "std::set<fs::path>& exclude={{}} /*not used*/){{\n",
       name);
   out << std::format("static constexpr const char* name  = \"{}\";\n",
-                     source.filename().c_str()); // TODO: escape
+                     escape_c_str(source.filename()));
   out << std::format("fs::path file = dir / name;\n");
-  out << "if(fs::exists(file)){std::cerr<<\"File \"<<file<<\" already there. "
+  out << "if(fs::exists(file) && no_override){std::cerr<<\"File \"<<file<<\" "
+         "already there. "
          "It will not be overwritten by rule "
       << name << ".\\n\";return WRITER_STATUS_SKIP;}\n";
-  out << "auto t = \"" << fs::read_symlink(source).lexically_normal().string()
+  out << "auto t = \""
+      << escape_c_str(fs::read_symlink(source).lexically_normal().string())
       << "\";\n"; // TODO: escape
   out << "fs::create_symlink(t,file);\nreturn WRITER_STATUS_OK;\n}\n";
   return {WRITER_STATUS_OK, name};
@@ -213,7 +221,7 @@ generate_folder_function(std::ostream &out, const fs::path &source,
       "std::set<fs::path>& exclude={{}}, const std::string& _name = {{}}){{\n",
       name);
   out << std::format("static constexpr const char* name  = \"{}\";\n",
-                     source.filename().c_str()); // TODO: escape
+                     escape_c_str(source.filename()));
   out << std::format(
       "fs::path file = dir / (_name.length()!=0?_name.c_str():name);\n");
   out << "fs::create_directories(file);\n";
@@ -236,9 +244,13 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
+  if (argc >= 5 && strcmp(argv[4], "override") == 0) {
+    no_override = false;
+  }
+
   fs::create_directories(fs::path(argv[2]));
   auto file = fs::path(argv[2]) / "main.cpp";
-  if (fs::exists(file)) {
+  if (fs::exists(file) && no_override) {
     std::cerr << "File " << file
               << " already there. It will not be overwritten\n";
   } else {
@@ -282,7 +294,88 @@ return decompressedData;
 }
 #endif
 
+bool no_override=true;
+
+std::string escape_c_str(const std::string &input) {
+  std::string escaped;
+  for (char c : input) {
+    switch (c) {
+    case '\"':
+      escaped += "\\\"";
+      break;
+    case '\\':
+      escaped += "\\\\";
+      break;
+    case '\n':
+      escaped += "\\n";
+      break;
+    case '\t':
+      escaped += "\\t";
+      break;
+    default:
+      escaped += c;
+      break;
+    }
+  }
+  return escaped;
+}
+
+std::string escape_meson_str(const std::string &input) {
+  std::string escaped;
+  for (char c : input) {
+    switch (c) {
+    case '\"':
+      escaped += "\\\"";
+      break;
+    case '\\':
+      escaped += "\\\\";
+      break;
+    case '\n':
+      escaped += "\\n";
+      break;
+    case '\t':
+      escaped += "\\t";
+      break;
+    default:
+      escaped += c;
+      break;
+    }
+  }
+  return escaped;
+}
+
+std::string escape_xml_str(const std::string &input) {
+  std::string escaped;
+  for (char c : input) {
+    switch (c) {
+    case '&':
+      escaped += "&amp;";
+      break;
+    case '<':
+      escaped += "&lt;";
+      break;
+    case '>':
+      escaped += "&gt;";
+      break;
+    case '\"':
+      escaped += "&quot;";
+      break;
+    case '\'':
+      escaped += "&apos;";
+      break;
+    default:
+      escaped += c;
+      break;
+    }
+  }
+  return escaped;
+}
+
 #define WRITE(x) {std::string tmp = x; out.write(tmp.data(),tmp.size());}
+#define WRITE_C(x) {std::string tmp = escape_c_str(x); out.write(tmp.data(),tmp.size());}
+#define WRITE_MESON(x) {std::string tmp = escape_meson_str(x); out.write(tmp.data(),tmp.size());}
+#define WRITE_XML(x) {std::string tmp = escape_xml_str(x); out.write(tmp.data(),tmp.size());}
+
 //TODO: Add escaped versions for different scenarios
 
 namespace fs = std::filesystem;
