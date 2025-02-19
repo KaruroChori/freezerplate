@@ -1,10 +1,10 @@
 - [ ] Make `<?` and `?>` user configurable (via XML file)
 - [ ] Accept skippable files/directories/file types (via XML file)
-- [ ] Macro to simplify access to the XML document
-- [ ] Add man pages
+- [ ] Introduce "custom steps" as part of the XML used to generate the parser instead of requiring manual work.
 - [x] Flag to force override during generation
 - [x] Initial support for escaping in some classes of languages
 - [x] Generate index of files (so to call them with a decent and stable name)
 - [x] Added support for raw files not needing templating
-- [ ] Introduce "custom steps" as part of the XML used to generate the parser instead of requiring manual work.
-- [ ] Permissions from the original file are not preserved. Well, do it.
+- [x] Permissions from the original file are not preserved. Well, do it.
+- [ ] Macro to simplify access to the XML document
+- [ ] Add man pages

@@ -1,6 +1,5 @@
 <? auto proj_name = env.child("project").attribute("name").as_string("undefined"); ?>
 <? auto proj_version = env.child("project").attribute("version").as_string("0.1.0"); ?>
-
 project(
     '<?WRITE_MESON(proj_name)?>',
     ['cpp'],

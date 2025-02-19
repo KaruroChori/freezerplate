@@ -149,7 +149,35 @@ struct init_t{ init_t(){fs_tree.emplace("./template/LICENCE.md",writer_file_1);}
 fs::path file = dir / name;
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_1.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
-out.close();
+{constexpr const uint8_t tmp[] = {};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+}
+auto proj_licence = env.child("project").child("licences");
+auto proj_author = env.child("project").attribute("author").as_string("Unknown Author");
+if(!proj_licence){{constexpr const uint8_t tmp[] = {0XA,0XA,0X41,0X6C,0X6C,0X20,0X72,0X69,0X67,0X68,0X74,0X73,0X20,0X72,0X65,0X73,0X65,0X72,0X76,0X65,0X64,0X20,0X62,0X79,0X20,};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+}WRITE(proj_author){constexpr const uint8_t tmp[] = {0XA,0XA,};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+}
+}
+else for (pugi::xml_node child: proj_licence.children())
+    if (child.type() == pugi::node_pcdata)
+        WRITE(child.value());out.close();
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
@@ -188,7 +216,7 @@ std::ofstream out(file, std::ios::binary);
     auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
 #endif
     out.write((const char*)dtmp.data(),dtmp.size());
-} auto proj_version = env.child("project").attribute("version").as_string("0.1.0"); {constexpr const uint8_t tmp[] = {0XA,0XA,0X70,0X72,0X6F,0X6A,0X65,0X63,0X74,0X28,0XA,0X20,0X20,0X20,0X20,0X27,};
+} auto proj_version = env.child("project").attribute("version").as_string("0.1.0"); {constexpr const uint8_t tmp[] = {0XA,0X70,0X72,0X6F,0X6A,0X65,0X63,0X74,0X28,0XA,0X20,0X20,0X20,0X20,0X27,};
 #ifdef TE4_COMPRESS
     auto dtmp = inflate({tmp,sizeof(tmp)});
 #else
@@ -239,7 +267,19 @@ struct init_t{ init_t(){fs_tree.emplace("./template/README.md",writer_file_4);} 
 fs::path file = dir / name;
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_4.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
-out.close();
+{constexpr const uint8_t tmp[] = {};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+}
+auto proj_description = env.child("project").child("description");
+for (pugi::xml_node child: proj_description.children()){
+    if (child.type() == pugi::node_pcdata)
+        WRITE(child.value());
+}out.close();
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }

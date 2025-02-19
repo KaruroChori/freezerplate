@@ -6,11 +6,12 @@
 
 ## What's that?
 
-Everyone loves templates: the let us reuse the same boilerplate code over and over, for each project we start and never finish.  
-Just think how frustrating it would be to bake cookies and having to manually shape each one of them.  
+Everyone loves templates: they let us reuse the same boilerplate code over and over, for each and every project we start to never be finished.  
+Just think how frustrating it would be to bake cookies and having to manually shape each one of them. No one deserves such life!
+
 However, in most scenarios, a naive copy & paste of files is not the best approach.  
 We might need to place our project name in several spots, or pre-generate multiple subfolders with the same pattern based on information which is application specific, only know when initializing a new project.  
-Not having a way to properly express this parametrization can be frustrating and time-consuming.  
+Lacking a way to properly express this parametrization can be frustrating and time-consuming.  
 Fret not! `freezerplate` is the unlikely solution to a problem no one knew they had!
 
 `freezerplate` allows you to automatically generate the C++ code of a program which can fully build your boilerplate just passing the destination folder and the environment file with the specific parametrization.  
@@ -30,7 +31,8 @@ I would advise against.
 
 ### Non Features
 
-- Binary files like sqlite databases or images can be tracked and added, but they cannot be reasonably changed by freezerplate. I would suggest generating them based on some post-script.
+- Binary files like SQLite databases or images can be tracked and added, but they cannot be reasonably changed by `freezerplate`.  
+  I would suggest generating them based on some post-script.
 
 ## General workflow?
 
@@ -44,8 +46,8 @@ I would advise against.
 
 > [!TIP]  
 > Did you know `freezerplate` uses `freezerplate` itself to generate most of the boilerplate for the newly generated templates builders?  
-> Why am I even asking, it is not like you knew about this project up til 5 minutes ago.
+> Why am I even asking, it is not like you knew about this project up till 5 minutes ago.
 
 For example, `freezerplate ./template-folder/ ./dist/` will generate in `./dist` all files needed to compile the template builder based on files from `./template-folder/`.  
 You can then enter in `./dist` run `./build.sh` and that is your ready-to-use builder for `./template-folder/`.  
-Freezerplate also accepts the path of an environment XML file as third argument, which is used to setup information for your custom template builder.
+`freezerplate` also accepts the path of an environment XML file as third argument, which is used to set up information for your custom template builder.

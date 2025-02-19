@@ -12,6 +12,6 @@ is not how the environment files for the final generators must be!-->
         </step>
     </steps>
 
-    <description></description>
+    <description>Simple description of the application</description>
     <licence></licence>
 </project>
