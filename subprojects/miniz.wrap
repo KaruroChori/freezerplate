@@ -1,0 +1,7 @@
+[wrap-git]
+url = https://github.com/richgel999/miniz
+revision = HEAD
+depth = 1
+method = meson
+[provide]
+miniz = miniz_dep

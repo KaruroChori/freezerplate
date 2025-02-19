@@ -1,0 +1,2 @@
+- [ ] Make `<?` and `?>` user configurable
+- [ ] Macro to simplify access to the XML document
