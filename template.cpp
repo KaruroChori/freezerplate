@@ -130,7 +130,7 @@ std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, con
 
 writer_status_t writer_file_0(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
 struct init_t{ init_t(){fs_tree.emplace("build.sh",writer_file_0);} } static init;static constexpr int perms = 509;static constexpr const char* name  = "build.sh";
-fs::path file = dir / name;
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_0.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
 {constexpr const uint8_t tmp[] = {0X23,0X21,0X2F,0X62,0X69,0X6E,0X2F,0X62,0X61,0X73,0X68,0XA,0X6D,0X65,0X73,0X6F,0X6E,0X20,0X73,0X65,0X74,0X75,0X70,0X20,0X2D,0X44,0X62,0X5F,0X6C,0X74,0X6F,0X3D,0X74,0X72,0X75,0X65,0X20,0X20,0X2D,0X2D,0X62,0X75,0X69,0X6C,0X64,0X74,0X79,0X70,0X65,0X3D,0X72,0X65,0X6C,0X65,0X61,0X73,0X65,0X20,0X2D,0X2D,0X72,0X65,0X63,0X6F,0X6E,0X66,0X69,0X67,0X75,0X72,0X65,0X20,0X62,0X75,0X69,0X6C,0X64,0X2F,0XA,0X73,0X75,0X64,0X6F,0X20,0X6D,0X65,0X73,0X6F,0X6E,0X20,0X69,0X6E,0X73,0X74,0X61,0X6C,0X6C,0X20,0X2D,0X43,0X20,0X62,0X75,0X69,0X6C,0X64,};
@@ -146,7 +146,7 @@ return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_1(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
 struct init_t{ init_t(){fs_tree.emplace("LICENCE.md",writer_file_1);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "LICENCE.md";
-fs::path file = dir / name;
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_1.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
 {constexpr const uint8_t tmp[] = {};
@@ -183,7 +183,7 @@ return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_2(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
 struct init_t{ init_t(){fs_tree.emplace(".gitignore",writer_file_2);} } static init;static constexpr int perms = 436;static constexpr const char* name  = ".gitignore";
-fs::path file = dir / name;
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_2.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
 {constexpr const uint8_t tmp[] = {0X2F,0X62,0X75,0X69,0X6C,0X64,0X2F,0XA,0X2F,0X64,0X69,0X73,0X74,0X2F,0XA,0X2F,0X2E,0X63,0X61,0X63,0X68,0X65,0X2F,0XA,0X2F,0X73,0X75,0X62,0X70,0X72,0X6F,0X6A,0X65,0X63,0X74,0X73,0X2F,0X2A,0XA,0X21,0X2F,0X73,0X75,0X62,0X70,0X72,0X6F,0X6A,0X65,0X63,0X74,0X73,0X2F,0X2A,0X2E,0X77,0X72,0X61,0X70,0XA,0X21,0X73,0X75,0X62,0X70,0X72,0X6F,0X6A,0X65,0X63,0X74,0X73,0X2F,0X70,0X61,0X63,0X6B,0X61,0X67,0X65,0X66,0X69,0X6C,0X65,0X73,0X2F,0XA,};
@@ -199,7 +199,7 @@ return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_3(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
 struct init_t{ init_t(){fs_tree.emplace("meson.build",writer_file_3);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "meson.build";
-fs::path file = dir / name;
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_3.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
 {constexpr const uint8_t tmp[] = {};
@@ -264,7 +264,7 @@ return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_4(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
 struct init_t{ init_t(){fs_tree.emplace("README.md",writer_file_4);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "README.md";
-fs::path file = dir / name;
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_4.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
 {constexpr const uint8_t tmp[] = {};
@@ -285,7 +285,7 @@ return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_5(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
 struct init_t{ init_t(){fs_tree.emplace("subprojects/pugixml.wrap",writer_file_5);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "pugixml.wrap";
-fs::path file = dir / name;
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_5.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
 {constexpr const uint8_t tmp[] = {0X5B,0X77,0X72,0X61,0X70,0X2D,0X66,0X69,0X6C,0X65,0X5D,0XA,0X64,0X69,0X72,0X65,0X63,0X74,0X6F,0X72,0X79,0X20,0X3D,0X20,0X70,0X75,0X67,0X69,0X78,0X6D,0X6C,0X2D,0X31,0X2E,0X31,0X34,0XA,0X73,0X6F,0X75,0X72,0X63,0X65,0X5F,0X75,0X72,0X6C,0X20,0X3D,0X20,0X68,0X74,0X74,0X70,0X73,0X3A,0X2F,0X2F,0X67,0X69,0X74,0X68,0X75,0X62,0X2E,0X63,0X6F,0X6D,0X2F,0X7A,0X65,0X75,0X78,0X2F,0X70,0X75,0X67,0X69,0X78,0X6D,0X6C,0X2F,0X61,0X72,0X63,0X68,0X69,0X76,0X65,0X2F,0X76,0X31,0X2E,0X31,0X34,0X2E,0X74,0X61,0X72,0X2E,0X67,0X7A,0XA,0X73,0X6F,0X75,0X72,0X63,0X65,0X5F,0X66,0X69,0X6C,0X65,0X6E,0X61,0X6D,0X65,0X20,0X3D,0X20,0X70,0X75,0X67,0X69,0X78,0X6D,0X6C,0X2D,0X31,0X2E,0X31,0X34,0X2E,0X74,0X61,0X72,0X2E,0X67,0X7A,0XA,0X73,0X6F,0X75,0X72,0X63,0X65,0X5F,0X68,0X61,0X73,0X68,0X20,0X3D,0X20,0X36,0X31,0X30,0X66,0X39,0X38,0X33,0X37,0X35,0X34,0X32,0X34,0X62,0X35,0X36,0X31,0X34,0X37,0X35,0X34,0X61,0X36,0X66,0X33,0X34,0X61,0X34,0X39,0X31,0X61,0X64,0X62,0X64,0X64,0X61,0X61,0X65,0X63,0X30,0X37,0X34,0X65,0X39,0X30,0X34,0X34,0X35,0X37,0X37,0X64,0X39,0X36,0X35,0X31,0X36,0X30,0X65,0X63,0X31,0X30,0X33,0X64,0X32,0X65,0XA,0X70,0X61,0X74,0X63,0X68,0X5F,0X66,0X69,0X6C,0X65,0X6E,0X61,0X6D,0X65,0X20,0X3D,0X20,0X70,0X75,0X67,0X69,0X78,0X6D,0X6C,0X5F,0X31,0X2E,0X31,0X34,0X2D,0X31,0X5F,0X70,0X61,0X74,0X63,0X68,0X2E,0X7A,0X69,0X70,0XA,0X70,0X61,0X74,0X63,0X68,0X5F,0X75,0X72,0X6C,0X20,0X3D,0X20,0X68,0X74,0X74,0X70,0X73,0X3A,0X2F,0X2F,0X77,0X72,0X61,0X70,0X64,0X62,0X2E,0X6D,0X65,0X73,0X6F,0X6E,0X62,0X75,0X69,0X6C,0X64,0X2E,0X63,0X6F,0X6D,0X2F,0X76,0X32,0X2F,0X70,0X75,0X67,0X69,0X78,0X6D,0X6C,0X5F,0X31,0X2E,0X31,0X34,0X2D,0X31,0X2F,0X67,0X65,0X74,0X5F,0X70,0X61,0X74,0X63,0X68,0XA,0X70,0X61,0X74,0X63,0X68,0X5F,0X68,0X61,0X73,0X68,0X20,0X3D,0X20,0X32,0X33,0X63,0X65,0X61,0X62,0X62,0X64,0X37,0X62,0X63,0X37,0X34,0X61,0X36,0X63,0X63,0X36,0X63,0X32,0X65,0X36,0X66,0X36,0X32,0X35,0X61,0X39,0X62,0X30,0X38,0X34,0X30,0X61,0X30,0X37,0X30,0X65,0X31,0X32,0X32,0X35,0X64,0X38,0X35,0X64,0X33,0X63,0X63,0X32,0X39,0X63,0X32,0X37,0X62,0X36,0X63,0X63,0X30,0X35,0X39,0X31,0X33,0X35,0XA,0X73,0X6F,0X75,0X72,0X63,0X65,0X5F,0X66,0X61,0X6C,0X6C,0X62,0X61,0X63,0X6B,0X5F,0X75,0X72,0X6C,0X20,0X3D,0X20,0X68,0X74,0X74,0X70,0X73,0X3A,0X2F,0X2F,0X67,0X69,0X74,0X68,0X75,0X62,0X2E,0X63,0X6F,0X6D,0X2F,0X6D,0X65,0X73,0X6F,0X6E,0X62,0X75,0X69,0X6C,0X64,0X2F,0X77,0X72,0X61,0X70,0X64,0X62,0X2F,0X72,0X65,0X6C,0X65,0X61,0X73,0X65,0X73,0X2F,0X64,0X6F,0X77,0X6E,0X6C,0X6F,0X61,0X64,0X2F,0X70,0X75,0X67,0X69,0X78,0X6D,0X6C,0X5F,0X31,0X2E,0X31,0X34,0X2D,0X31,0X2F,0X70,0X75,0X67,0X69,0X78,0X6D,0X6C,0X2D,0X31,0X2E,0X31,0X34,0X2E,0X74,0X61,0X72,0X2E,0X67,0X7A,0XA,0X77,0X72,0X61,0X70,0X64,0X62,0X5F,0X76,0X65,0X72,0X73,0X69,0X6F,0X6E,0X20,0X3D,0X20,0X31,0X2E,0X31,0X34,0X2D,0X31,0XA,0XA,0X5B,0X70,0X72,0X6F,0X76,0X69,0X64,0X65,0X5D,0XA,0X70,0X75,0X67,0X69,0X78,0X6D,0X6C,0X20,0X3D,0X20,0X70,0X75,0X67,0X69,0X78,0X6D,0X6C,0X5F,0X64,0X65,0X70,0XA,};
@@ -301,7 +301,7 @@ return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_6(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
 struct init_t{ init_t(){fs_tree.emplace("subprojects/miniz.wrap",writer_file_6);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "miniz.wrap";
-fs::path file = dir / name;
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_6.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
 {constexpr const uint8_t tmp[] = {0X5B,0X77,0X72,0X61,0X70,0X2D,0X67,0X69,0X74,0X5D,0XA,0X75,0X72,0X6C,0X20,0X3D,0X20,0X68,0X74,0X74,0X70,0X73,0X3A,0X2F,0X2F,0X67,0X69,0X74,0X68,0X75,0X62,0X2E,0X63,0X6F,0X6D,0X2F,0X72,0X69,0X63,0X68,0X67,0X65,0X6C,0X39,0X39,0X39,0X2F,0X6D,0X69,0X6E,0X69,0X7A,0XA,0X72,0X65,0X76,0X69,0X73,0X69,0X6F,0X6E,0X20,0X3D,0X20,0X48,0X45,0X41,0X44,0XA,0X64,0X65,0X70,0X74,0X68,0X20,0X3D,0X20,0X31,0XA,0X6D,0X65,0X74,0X68,0X6F,0X64,0X20,0X3D,0X20,0X6D,0X65,0X73,0X6F,0X6E,0XA,0X5B,0X70,0X72,0X6F,0X76,0X69,0X64,0X65,0X5D,0XA,0X6D,0X69,0X6E,0X69,0X7A,0X20,0X3D,0X20,0X6D,0X69,0X6E,0X69,0X7A,0X5F,0X64,0X65,0X70,0XA,};
@@ -326,7 +326,7 @@ return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_7(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
 struct init_t{ init_t(){fs_tree.emplace("meson.options",writer_file_7);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "meson.options";
-fs::path file = dir / name;
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_7.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
 {constexpr const uint8_t tmp[] = {0X6F,0X70,0X74,0X69,0X6F,0X6E,0X28,0X27,0X63,0X6F,0X6D,0X70,0X72,0X65,0X73,0X73,0X27,0X2C,0X20,0X74,0X79,0X70,0X65,0X3A,0X20,0X27,0X62,0X6F,0X6F,0X6C,0X65,0X61,0X6E,0X27,0X2C,0X20,0X76,0X61,0X6C,0X75,0X65,0X3A,0X20,0X74,0X72,0X75,0X65,0X29,};
@@ -342,7 +342,7 @@ return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_8(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
 struct init_t{ init_t(){fs_tree.emplace("platforms/default.ini",writer_file_8);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "default.ini";
-fs::path file = dir / name;
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_8.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
 {constexpr const uint8_t tmp[] = {0X5B,0X62,0X75,0X69,0X6C,0X74,0X2D,0X69,0X6E,0X20,0X6F,0X70,0X74,0X69,0X6F,0X6E,0X73,0X5D,0XA,0X63,0X5F,0X61,0X72,0X67,0X73,0X20,0X3D,0X20,0X5B,0X27,0X2D,0X6D,0X61,0X72,0X63,0X68,0X3D,0X6E,0X61,0X74,0X69,0X76,0X65,0X27,0X2C,0X20,0X27,0X2D,0X4F,0X33,0X27,0X2C,0X20,0X27,0X2D,0X66,0X6C,0X74,0X6F,0X27,0X2C,0X20,0X27,0X2D,0X66,0X75,0X73,0X65,0X2D,0X6C,0X69,0X6E,0X6B,0X65,0X72,0X2D,0X70,0X6C,0X75,0X67,0X69,0X6E,0X27,0X5D,0XA,0X63,0X5F,0X6C,0X69,0X6E,0X6B,0X5F,0X61,0X72,0X67,0X73,0X20,0X3D,0X20,0X5B,0X27,0X2D,0X6D,0X61,0X72,0X63,0X68,0X3D,0X6E,0X61,0X74,0X69,0X76,0X65,0X27,0X2C,0X20,0X27,0X2D,0X4F,0X33,0X27,0X2C,0X20,0X27,0X2D,0X66,0X6C,0X74,0X6F,0X27,0X2C,0X20,0X27,0X2D,0X66,0X75,0X73,0X65,0X2D,0X6C,0X69,0X6E,0X6B,0X65,0X72,0X2D,0X70,0X6C,0X75,0X67,0X69,0X6E,0X27,0X2C,0X20,0X5D,0X20,0X23,0X27,0X2D,0X73,0X74,0X61,0X74,0X69,0X63,0X27,0X2C,0X20,0X27,0X2D,0X73,0X74,0X61,0X74,0X69,0X63,0X2D,0X6C,0X69,0X62,0X67,0X63,0X63,0X27,0XA,0XA,0X63,0X70,0X70,0X5F,0X61,0X72,0X67,0X73,0X20,0X3D,0X20,0X5B,0X27,0X2D,0X6D,0X61,0X72,0X63,0X68,0X3D,0X6E,0X61,0X74,0X69,0X76,0X65,0X27,0X2C,0X20,0X27,0X2D,0X4F,0X33,0X27,0X2C,0X20,0X27,0X2D,0X66,0X6C,0X74,0X6F,0X27,0X2C,0X20,0X27,0X2D,0X66,0X75,0X73,0X65,0X2D,0X6C,0X69,0X6E,0X6B,0X65,0X72,0X2D,0X70,0X6C,0X75,0X67,0X69,0X6E,0X27,0X5D,0XA,0X63,0X70,0X70,0X5F,0X6C,0X69,0X6E,0X6B,0X5F,0X61,0X72,0X67,0X73,0X20,0X3D,0X20,0X5B,0X27,0X2D,0X6D,0X61,0X72,0X63,0X68,0X3D,0X6E,0X61,0X74,0X69,0X76,0X65,0X27,0X2C,0X20,0X27,0X2D,0X4F,0X33,0X27,0X2C,0X20,0X27,0X2D,0X66,0X6C,0X74,0X6F,0X27,0X2C,0X20,0X27,0X2D,0X66,0X75,0X73,0X65,0X2D,0X6C,0X69,0X6E,0X6B,0X65,0X72,0X2D,0X70,0X6C,0X75,0X67,0X69,0X6E,0X27,0X2C,0X20,0X5D,0X20,0X23,0X27,0X2D,0X73,0X74,0X61,0X74,0X69,0X63,0X27,0X2C,0X20,0X27,0X2D,0X73,0X74,0X61,0X74,0X69,0X63,0X2D,0X6C,0X69,0X62,0X67,0X63,0X63,0X27,0X2C,0X20,0X27,0X2D,0X73,0X74,0X61,0X74,0X69,0X63,0X2D,0X6C,0X69,0X62,0X73,0X74,0X64,0X63,0X2B,0X2B,0X27,};
@@ -387,7 +387,12 @@ int main(int argc, const char* argv[]){
     doc.load_file(/*(fs::path(getenv("PWD"))/argv[2]).c_str()*/argv[2]);
 
     //Default entry point. Change by adding exclusions and further calls if you need to change its behaviour
-    writer_dir_0(argv[1], doc.root());
+    #if !__has_include("impl.frag.cpp")
+        writer_dir_0(argv[1], doc.root());
+
+    #else
+        #include "impl.frag.cpp"
+    #endif
 
     return 0;
 }

@@ -98,7 +98,7 @@ generate_file_function(std::ostream &out, const fs::path &source) {
                      (int)fs::status(source).permissions());
   out << std::format("static constexpr const char* name  = \"{}\";\n",
                      escape_c_str(source.filename()));
-  out << std::format("fs::path file = dir / name;\n");
+  out << "fs::path file = dir / (_name.length()!=0?_name.c_str():name);\n";
   out << "if(fs::exists(file) && no_override){std::cerr<<\"File \"<<file<<\" "
          "already there. "
          "It will not be overwritten by rule "
@@ -201,7 +201,7 @@ generate_raw_function(std::ostream &out, const fs::path &source) {
                      (int)fs::status(source).permissions());
   out << std::format("static constexpr const char* name  = \"{}\";\n",
                      escape_c_str(source.filename()));
-  out << std::format("fs::path file = dir / name;\n");
+  out << "fs::path file = dir / (_name.length()!=0?_name.c_str():name);\n";
   out << "if(fs::exists(file) && no_override){std::cerr<<\"File \"<<file<<\" "
          "already there. "
          "It will not be overwritten by rule "
@@ -252,7 +252,7 @@ generate_link_function(std::ostream &out, const fs::path &source) {
       escape_c_str(fs::relative(source, BASE)), name);
   out << std::format("static constexpr const char* name  = \"{}\";\n",
                      escape_c_str(source.filename()));
-  out << std::format("fs::path file = dir / name;\n");
+  out << "fs::path file = dir / (_name.length()!=0?_name.c_str():name);\n";
   out << "if(fs::exists(file) && no_override){std::cerr<<\"File \"<<file<<\" "
          "already there. "
          "It will not be overwritten by rule "
@@ -332,8 +332,7 @@ generate_folder_function(std::ostream &out, const fs::path &source,
       escape_c_str(fs::relative(source, BASE)), name);
   out << std::format("static constexpr const char* name  = \"{}\";\n",
                      escape_c_str(source.filename()));
-  out << std::format(
-      "fs::path file = dir / (_name.length()!=0?_name.c_str():name);\n");
+  out << "fs::path file = dir / (_name.length()!=0?_name.c_str():name);\n";
   out << "fs::create_directories(file);\n";
   for (auto fn : callthese) {
     out << std::format(
@@ -527,19 +526,25 @@ int main(int argc, const char* argv[]){
     doc.load_file(/*(fs::path(getenv("PWD"))/argv[2]).c_str()*/argv[2]);
 
     //Default entry point. Change by adding exclusions and further calls if you need to change its behaviour
-    )";
+    #if !__has_include("impl.frag.cpp")
+)";
 
     for (auto &entry : doc.child("project").child("steps").children()) {
       auto src = entry.attribute("source").as_string(nullptr);
       if (src != nullptr) {
         out << std::format(
-            R"(fs_tree["{}"](argv[1], doc.root(), {{}}, {{}});\n)",
+            "fs_tree[\"{}\"](argv[1], doc.root(), {{}}, {{}});\n",
             escape_c_str(src));
       }
     }
     if (!(doc.child("project").child("steps"))) {
-      out << R"(writer_dir_0(argv[1], doc.root());)" << "\n";
+      out << R"(        writer_dir_0(argv[1], doc.root());)" << "\n";
     }
+    out << R"(
+    #else
+        #include "impl.frag.cpp"
+    #endif
+)";
 
     writer_dir_0(argv[2], doc.root());
 
