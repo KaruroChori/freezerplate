@@ -1,7 +1,7 @@
 #ifndef TE4_INTERNAL
 #define TE4_COMPRESS
 #endif
-//Automatically generated, if you want to include changes, please do that in the main function
+//Automatically generated, if you want to include changes, please do that in the extra files `head
 //The rest should not be touched.
 
 #include <iostream>
@@ -130,6 +130,9 @@ typedef pugi::xml_node env_t;
 
 std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude, const std::string& _name)> fs_tree;
 
+#if __has_include("head.frag.cpp")
+  #include "head.frag.cpp"
+#endif
 writer_status_t writer_file_0(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
 static constexpr int perms = 509;static constexpr const char* name  = "build.sh";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
@@ -398,11 +401,38 @@ std::ofstream out(file, std::ios::binary);
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
+writer_status_t writer_file_9(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
+static constexpr int perms = 436;static constexpr const char* name  = "zig-wasm32.ini";
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
+if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_9.\n";return WRITER_STATUS_SKIP;}
+std::ofstream out(file, std::ios::binary);
+{constexpr const uint8_t tmp[] = {0X71,0X2,0X0,0X0,0X78,0X9C,0X9D,0X90,0XBB,0X6E,0XC3,0X30,0XC,0X45,0X77,0X7F,0X85,0X80,0XE,0X1A,0X12,0X25,0X40,0X3B,0X7B,0XEB,0X5F,0X4,0X85,0XC1,0XC8,0XB4,0X43,0X54,0X2F,0X88,0X34,0X5A,0XF7,0XEB,0X4B,0XDB,0X1D,0X9C,0X8E,0XDE,0XA8,0X73,0X75,0XF9,0XB8,0X2F,0X11,0X39,0X27,0XC3,0X28,0X53,0X31,0XCE,0X55,0XF4,0X39,0XD,0X34,0X4E,0X15,0XCD,0X7D,0XA2,0XD0,0X5F,0X15,0XAE,0X85,0XCC,0X5,0XDB,0X8A,0X1,0X81,0X51,0X99,0XAF,0X99,0XD9,0XD,0X14,0XD0,0X5C,0XAE,0X25,0X80,0XC,0XB9,0X46,0XBE,0XFE,0XD0,0XE8,0XBE,0X80,0XE3,0XDB,0XEB,0X85,0X12,0X19,0XF7,0XDE,0XE3,0X0,0X53,0X90,0X2E,0XD0,0XBD,0X42,0X9D,0X5B,0X16,0X10,0XF2,0X4D,0X73,0XBB,0X53,0X82,0X4A,0XC8,0X1F,0X8D,0X37,0XAD,0XB9,0X59,0X75,0XDA,0XB3,0XB1,0XDE,0X5B,0X25,0XA5,0X3C,0XB1,0XD3,0X49,0X21,0XD4,0X3D,0X83,0XAA,0XA8,0X42,0XD2,0XBE,0X7B,0XBC,0X11,0X95,0XFE,0XF1,0XD,0XF6,0X21,0X48,0XCE,0X61,0X2F,0XFC,0X21,0X15,0X59,0X2A,0X3D,0X8D,0X5D,0X81,0XA,0XBA,0XAB,0X6,0X20,0X8E,0X92,0XC9,0X45,0X28,0XA7,0X65,0XE7,0XE,0XEA,0XC8,0XEB,0X6F,0XE7,0X44,0X6B,0X94,0X76,0XBB,0X7B,0X39,0X9F,0XEC,0XD9,0XBA,0X21,0X65,0X87,0XDF,0X1E,0X37,0XCB,0X72,0X95,0X86,0X90,0X3E,0X8F,0X18,0X4B,0X39,0XE8,0X3A,0X38,0XB0,0XB9,0X3D,0X32,0X4B,0X17,0XC1,0X3F,0X28,0XA1,0X46,0X33,0XB3,0X60,0XD4,0X1E,0X16,0X23,0X7B,0X4D,0X45,0X30,0X59,0X1D,0X30,0X75,0X3,0X44,0XA,0XF3,0XA2,0X6C,0X3D,0X57,0XBA,0X7F,0X62,0XEA,0X9,0XD2,0X42,0X2,0X89,0X4,0XB4,0XBF,0XD4,0XB4,0XCE,0XFD,};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+}out.close();
+fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
+return WRITER_STATUS_OK;
+}
+writer_status_t writer_file_10(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
+static constexpr int perms = 436;static constexpr const char* name  = "cosmopolitan.ini";
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
+if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_10.\n";return WRITER_STATUS_SKIP;}
+std::ofstream out(file, std::ios::binary);
+out.close();
+fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
+return WRITER_STATUS_OK;
+}
 writer_status_t writer_dir_2(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={}, const std::string& _name = {}){
 static constexpr int perms = 509;static constexpr const char* name  = "platforms";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 fs::create_directories(file);
 if(exclude.find(file)==exclude.end())writer_file_8(file, env, exclude);
+if(exclude.find(file)==exclude.end())writer_file_9(file, env, exclude);
+if(exclude.find(file)==exclude.end())writer_file_10(file, env, exclude);
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
@@ -427,13 +457,13 @@ int main(int argc, const char* argv[]){
     if(argc<3)exit(1);
     pugi::xml_document doc;
     doc.load_file(/*(fs::path(getenv("PWD"))/argv[2]).c_str()*/argv[2]);
-fs_tree.emplace("build.sh",writer_file_0);fs_tree.emplace("LICENCE.md",writer_file_1);fs_tree.emplace(".gitignore",writer_file_2);fs_tree.emplace("meson.build",writer_file_3);fs_tree.emplace("README.md",writer_file_4);fs_tree.emplace("subprojects/pugixml.wrap",writer_file_5);fs_tree.emplace("subprojects/miniz.wrap",writer_file_6);fs_tree.emplace("subprojects",writer_dir_1);fs_tree.emplace("meson.options",writer_file_7);fs_tree.emplace("platforms/default.ini",writer_file_8);fs_tree.emplace("platforms",writer_dir_2);fs_tree.emplace(".",writer_dir_0);
+fs_tree.emplace("build.sh",writer_file_0);fs_tree.emplace("LICENCE.md",writer_file_1);fs_tree.emplace(".gitignore",writer_file_2);fs_tree.emplace("meson.build",writer_file_3);fs_tree.emplace("README.md",writer_file_4);fs_tree.emplace("subprojects/pugixml.wrap",writer_file_5);fs_tree.emplace("subprojects/miniz.wrap",writer_file_6);fs_tree.emplace("subprojects",writer_dir_1);fs_tree.emplace("meson.options",writer_file_7);fs_tree.emplace("platforms/default.ini",writer_file_8);fs_tree.emplace("platforms/zig-wasm32.ini",writer_file_9);fs_tree.emplace("platforms/cosmopolitan.ini",writer_file_10);fs_tree.emplace("platforms",writer_dir_2);fs_tree.emplace(".",writer_dir_0);
     //Default entry point. Change by adding exclusions and further calls if you need to change its behaviour
-    #if !__has_include("impl.frag.cpp")
+    #if !__has_include("body.frag.cpp")
         writer_dir_0(argv[1], doc.root());
 
     #else
-        #include "impl.frag.cpp"
+        #include "body.frag.cpp"
     #endif
 
     return 0;

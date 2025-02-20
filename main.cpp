@@ -393,8 +393,9 @@ int main(int argc, char *argv[]) {
 #endif
     ctx.out <<
         R"(
-//Automatically generated, if you want to include changes, please do that in the main function
-//The rest should not be touched.
+//Automatically generated.
+//If you want to include changes, please do that in the extra files `head.frag.cpp` and `body.frag.cpp`.
+//This unit should not be touched.
 
 #include <iostream>
 #include <filesystem>
@@ -522,6 +523,9 @@ typedef pugi::xml_node env_t;
 
 std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude, const std::string& _name)> fs_tree;
 
+#if __has_include("head.frag.cpp")
+  #include "head.frag.cpp"
+#endif
 )";
 
     pugi::xml_document doc = {};
@@ -548,7 +552,7 @@ int main(int argc, const char* argv[]){
     ctx.out << ctx.fn_table.str();
     ctx.out << R"(
     //Default entry point. Change by adding exclusions and further calls if you need to change its behaviour
-    #if !__has_include("impl.frag.cpp")
+    #if !__has_include("body.frag.cpp")
 )";
 
     for (auto &entry : doc.child("project").child("steps").children()) {
@@ -564,7 +568,7 @@ int main(int argc, const char* argv[]){
     }
     ctx.out << R"(
     #else
-        #include "impl.frag.cpp"
+        #include "body.frag.cpp"
     #endif
 )";
 
