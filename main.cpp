@@ -19,6 +19,7 @@
 #include <set>
 #include <sstream>
 #include <string_view>
+#include <unistd.h>
 #include <vector>
 
 #include <pugixml.hpp>
@@ -371,18 +372,82 @@ extern std::map<fs::path,
                                     const std::string &_name)>
     fs_tree;
 
+void printHelp() {
+  std::cout << "Usage: freezeplate [options] source "
+               "dest [env-file]\n"
+            << "Options:\n"
+            << "  -f, --force        Enable the override flag. Existing files "
+               "will be overwritten.\n"
+            << "  -h, --help         Display this help message and exit.\n"
+            << "\n"
+            << "Arguments:\n"
+            << "  source       Path to the directory containing the "
+               "template files.\n"
+            << "  destination  Path to the directory where the "
+               "generated code will be saved.\n"
+            << "  env-file     Name of the environment file in XML "
+               "format. If omitted, content will be read from stdin.\n"
+            << "More info using man pages\n";
+}
+
 int main(int argc, char *argv[]) {
+  std::string source_folder;
+  std::string dest_folder;
+  std::string src_file;
+
+  pugi::xml_document doc = {};
+
+  /*
   if (argc < 3) {
-    std::cerr << "Usage: freezerplate TEMPLATE_DIR OUT_DIR [CONFIG_FILE]\n";
+    std::cerr << std::format("Usage: {} TEMPLATE_DIR OUT_DIR [CONFIG_FILE]\n",
+                             argv[0]);
     exit(1);
   }
 
   if (argc >= 5 && strcmp(argv[4], "override") == 0) {
     no_override = false;
   }
+*/
+  int opt;
+  while ((opt = getopt(argc, argv, "fh")) != -1) {
+    switch (opt) {
+    case 'f':
+      no_override = false;
+      break;
+    case 'h':
+    case '?':
+      printHelp();
+      return 1;
+    }
+  }
 
-  fs::create_directories(fs::path(argv[2]));
-  auto file = fs::path(argv[2]) / "main.cpp";
+  // Check positional arguments
+  if (optind < argc) {
+    source_folder = argv[optind++];
+  } else {
+    std::cerr << "Error: Source directory is required." << std::endl;
+    return 1;
+  }
+
+  if (optind < argc) {
+    dest_folder = argv[optind++];
+  } else {
+    std::cerr << "Error: Destination folder is required." << std::endl;
+    return 1;
+  }
+
+  if (optind < argc) {
+    src_file = argv[optind++];
+    doc.load_file(src_file.c_str());
+  } else {
+    std::cout << "Enter file content (Ctrl+D to end):" << std::endl;
+    std::ostringstream buffer;
+    buffer << std::cin.rdbuf(); // Read all input until EOF
+    doc.load_string(buffer.str().c_str());
+  }
+
+  fs::create_directories(fs::path(dest_folder));
+  auto file = fs::path(dest_folder) / "main.cpp";
   if (fs::exists(file) && no_override) {
     std::cerr << "File " << file
               << " already there. It will not be overwritten\n";
@@ -528,13 +593,7 @@ std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, con
 #endif
 )";
 
-    pugi::xml_document doc = {};
-    if (argc >= 4 && fs::exists(argv[3]))
-      doc.load_file(argv[3]);
-    else
-      doc.load_string("<project></project>");
-
-    ctx.BASE = argv[1];
+    ctx.BASE = source_folder;
     ctx.LBRACE =
         doc.root().child("project").attribute("lbrace").as_string("<?");
     ctx.RBRACE =
@@ -572,7 +631,7 @@ int main(int argc, const char* argv[]){
     #endif
 )";
 
-    writer_dir_0(argv[2], doc.root());
+    writer_dir_0(dest_folder, doc.root());
 
     ctx.out << R"(
     return 0;

@@ -1,0 +1,56 @@
+.TH FREEZERPLATE 1 "February 2025" "0.1" "FreezerPlate 🥶🥏 Manual"
+.SH NAME
+freezerplate \- Template generator CLI
+
+.SH SYNOPSIS
+.B freezerplate
+.I source_directory
+.I destination_directory
+.BR [-f | --force]
+.I [filename]
+
+.SH DESCRIPTION
+.B freezerplate
+is a command-line tool for generating portable templates. The source directory is where the source data is located, which may be organized in a recursive directory structure. The generated code will be emitted to the specified destination directory.
+
+The filename provided is an environment file written in XML format, following specific specifications that will be detailed later. If the filename is not provided, the program will prompt the user to enter its content.
+
+.SH OPTIONS
+.TP
+.BI -f , --force
+Enables the override flag. When this option is specified, existing files in the destination directory will be overwritten if they already exist.
+
+.SH ARGUMENTS
+.TP
+.I source_directory
+The path to the directory containing the template files. This directory may contain subdirectories with additional templates.
+
+.TP
+.I destination_directory
+The path to the directory where the generated code will be saved. This directory will be created if it does not exist.
+
+.TP
+.I filename
+The name of the environment file in XML format. If this argument is omitted, the program will prompt the user to enter the file content.
+
+.SH EXAMPLES
+.TP
+.B freezerplate /path/to/source /path/to/destination -f environment.xml
+Generates code from templates located in `/path/to/source`, saves the output to `/path/to/destination`, and overwrites any existing files.
+
+.TP
+.B freezerplate /path/to/source /path/to/destination environment.xml
+Generates code from templates located in `/path/to/source`, saves the output to `/path/to/destination`, and uses `environment.xml` as the filename.
+
+.TP
+.B freezerplate /path/to/source /path/to/destination
+Prompts the user to enter the environment file content after generating code from templates.
+
+.SH AUTHOR
+Written by karurochari.
+
+.SH REPORTING BUGS
+Report bugs to <https://github.com/KaruroChori/freezerplate/issues>.
+
+.SH COPYRIGHT
+Copyright (C) 2025 karurochari. CC Attribution-NoDerivatives 4.0 International.

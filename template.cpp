@@ -1,8 +1,9 @@
 #ifndef TE4_INTERNAL
 #define TE4_COMPRESS
 #endif
-//Automatically generated, if you want to include changes, please do that in the extra files `head
-//The rest should not be touched.
+//Automatically generated.
+//If you want to include changes, please do that in the extra files `head.frag.cpp` and `body.frag.cpp`.
+//This unit should not be touched.
 
 #include <iostream>
 #include <filesystem>
