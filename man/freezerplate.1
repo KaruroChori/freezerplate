@@ -15,6 +15,50 @@ is a command-line tool for generating portable templates. The source directory i
 
 The filename provided is an environment file written in XML format, following specific specifications that will be detailed later. If the filename is not provided, the program will prompt the user to enter its content.
 
+.SH XML FILE SYNTAX
+The XML file should follow the structure below:
+
+.EX
+<project name="example-templ" version="1.0.0" author="herodev" repo="https://example.com/project.git" lbrace="&lt;?" rbrace="?&gt;">
+    <description>Simple description of the application injected in its README.md</description>
+    <licence mnemonic="GPL2.0">Only used if a mnemonic is not provided (or in case it is unknown)</licence>
+</project>
+.EE
+
+The attributes and elements are as follows:
+.TP
+.B name
+The name of the project (required).
+.TP
+.B version
+The version of the project (optional).
+.TP
+.B author
+The author of the project (optional).
+.TP
+.B repo
+The URL of the project's repository (optional).
+.TP
+.B lbrace
+The left brace character for template syntax (optional, defaults to `<?`).
+.TP
+.B rbrace
+The right brace character for template syntax (optional, defaults to `?>`).
+.TP
+.B description
+A brief description of the application (optional).
+.TP
+.B licence
+The license under which the project is distributed (optional). If a mnemonic is not provided, this field text is used.
+
+Additionally, if provided, the program can automatically include two optional files:
+.TP
+.B body.frag.cpp
+A fragment file that can contain additional code to be included in the body of the generated output.
+.TP
+.B head.frag.cpp
+A fragment file that can contain additional code to be included in the header of the generated output.
+
 .SH OPTIONS
 .TP
 .BI -f , --force

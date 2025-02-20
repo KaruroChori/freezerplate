@@ -1,17 +1,22 @@
 <!--Typical structure of an environment file to generate custom generators via freezerplate-->
-<!--This
-is not how the environment files for the final generators must be!-->
-<project name="example-templ" version="0.1.0" author="karurochari" lbrace="&lt;?" rbrace="?&gt;">
+<!--This is not how the environment files for the final generators must be!-->
+<project name="example-templ" version="0.1.0" author="karurochari" repo="https://source.com"
+    lbrace="&lt;?" rbrace="?&gt;">
+    <!--
     <steps>
         <step source=".">
-            <!--<skip>
+            <exclude>
+                <entry>name-1</entry>
+                <entry>name-2</entry>
+            </exclude>
+            <skip>
                 <dir>path1</dir>
                 <type>jpg</type>
                 <type>png</type>
-            </skip>-->
+            </skip>
         </step>
     </steps>
-
+    -->
     <description>Simple description of the application</description>
-    <licence></licence>
+    <licence mnemonic="GPL2.0"></licence>
 </project>
