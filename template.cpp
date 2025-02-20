@@ -187,7 +187,7 @@ static std::map<std::string, std::string> common_licences = {
 
 auto proj_licence = env.child("project").child("licences");
 auto proj_author = env.child("project").attribute("author").as_string("Unknown Author");
-if(!proj_licence){{constexpr const uint8_t tmp[] = {0X19,0X0,0X0,0X0,0X78,0X9C,0X1,0X19,0X0,0XE6,0XFF,0XA,0XA,0X41,0X6C,0X6C,0X20,0X72,0X69,0X67,0X68,0X74,0X73,0X20,0X72,0X65,0X73,0X65,0X72,0X76,0X65,0X64,0X20,0X62,0X79,0X20,0X67,0XF1,0X8,0X7A,};
+if(!proj_licence){{constexpr const uint8_t tmp[] = {0X18,0X0,0X0,0X0,0X78,0X9C,0X1,0X18,0X0,0XE7,0XFF,0XA,0X41,0X6C,0X6C,0X20,0X72,0X69,0X67,0X68,0X74,0X73,0X20,0X72,0X65,0X73,0X65,0X72,0X76,0X65,0X64,0X20,0X62,0X79,0X20,0X66,0XF6,0X8,0X70,};
 #ifdef TE4_COMPRESS
     auto dtmp = inflate({tmp,sizeof(tmp)});
 #else
@@ -237,10 +237,14 @@ std::ofstream out(file, std::ios::binary);
     auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
 #endif
     out.write((const char*)dtmp.data(),dtmp.size());
-}
-auto proj_name = env.child("project").attribute("name").as_string("undefined");
-auto proj_version = env.child("project").attribute("version").as_string("0.1.0");
-{constexpr const uint8_t tmp[] = {0XE,0X0,0X0,0X0,0X78,0X9C,0X1,0XE,0X0,0XF1,0XFF,0X70,0X72,0X6F,0X6A,0X65,0X63,0X74,0X28,0XA,0X20,0X20,0X20,0X20,0X27,0X24,0X2,0X3,0XD1,};
+}auto proj_name = env.child("project").attribute("name").as_string("undefined");{constexpr const uint8_t tmp[] = {0X0,0X0,0X0,0X0,0X78,0X9C,0X3,0X0,0X0,0X0,0X0,0X1,};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+}auto proj_version = env.child("project").attribute("version").as_string("0.1.0");{constexpr const uint8_t tmp[] = {0XE,0X0,0X0,0X0,0X78,0X9C,0X1,0XE,0X0,0XF1,0XFF,0X70,0X72,0X6F,0X6A,0X65,0X63,0X74,0X28,0XA,0X20,0X20,0X20,0X20,0X27,0X24,0X2,0X3,0XD1,};
 #ifdef TE4_COMPRESS
     auto dtmp = inflate({tmp,sizeof(tmp)});
 #else
@@ -310,7 +314,7 @@ auto proj_description = env.child("project").child("description");
 for (pugi::xml_node child: proj_description.children()){
     if (child.type() == pugi::node_pcdata)
         WRITE(child.value());
-}{constexpr const uint8_t tmp[] = {0X2F,0X0,0X0,0X0,0X78,0X9C,0XE3,0XE2,0X52,0X56,0X56,0XF0,0XC8,0X2F,0X57,0X28,0XC9,0X57,0X48,0XCE,0XCF,0X2D,0XC8,0XCC,0X49,0XE5,0X42,0X12,0X2A,0X2D,0X86,0X70,0X7D,0X32,0X93,0X53,0XF3,0X92,0X53,0XB9,0X0,0X2E,0X1A,0XD,0X4,};
+}{constexpr const uint8_t tmp[] = {0X2E,0X0,0X0,0X0,0X78,0X9C,0XE3,0X52,0X56,0X56,0XF0,0XC8,0X2F,0X57,0X28,0XC9,0X57,0X48,0XCE,0XCF,0X2D,0XC8,0XCC,0X49,0XE5,0XE2,0X42,0X8,0X95,0X16,0X43,0XB8,0X3E,0X99,0XC9,0XA9,0X79,0XC9,0XA9,0X5C,0X0,0X2C,0X43,0XC,0XFA,};
 #ifdef TE4_COMPRESS
     auto dtmp = inflate({tmp,sizeof(tmp)});
 #else

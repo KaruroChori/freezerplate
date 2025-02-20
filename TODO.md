@@ -8,3 +8,4 @@
 - [x] Permissions from the original file are not preserved. Well, do it.
 - [ ] Macro to simplify access to the XML document
 - [ ] Add man pages
+- [ ] Only LF is being handled properly. CRLF ending style is not.
