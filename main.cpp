@@ -506,6 +506,9 @@ typedef pugi::xml_node env_t;
 
 std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude, const std::string& _name)> fs_tree;
 
+#if __has_include("head.frag.cpp")
+  #include "head.frag.cpp"
+#endif
 )";
 
     pugi::xml_document doc = {};
@@ -526,7 +529,7 @@ int main(int argc, const char* argv[]){
     doc.load_file(/*(fs::path(getenv("PWD"))/argv[2]).c_str()*/argv[2]);
 
     //Default entry point. Change by adding exclusions and further calls if you need to change its behaviour
-    #if !__has_include("impl.frag.cpp")
+    #if !__has_include("body.frag.cpp")
 )";
 
     for (auto &entry : doc.child("project").child("steps").children()) {
@@ -542,7 +545,7 @@ int main(int argc, const char* argv[]){
     }
     out << R"(
     #else
-        #include "impl.frag.cpp"
+        #include "body.frag.cpp"
     #endif
 )";
 

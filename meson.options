@@ -1,1 +1,1 @@
-option('compress', type: 'boolean', value: true)
+option('compress', type: 'boolean', value: false)
