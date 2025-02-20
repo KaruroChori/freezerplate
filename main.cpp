@@ -16,6 +16,7 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <sstream>
 #include <string_view>
 #include <vector>
 
@@ -69,7 +70,8 @@ fs::path BASE;
 
 // File templates
 std::pair<writer_status_t, std::string>
-generate_file_function(std::ostream &out, const fs::path &source) {
+generate_file_function(std::ostream &out, std::ostream &fn_table,
+                       const fs::path &source) {
   static int counter = 0;
 
   // Read file contents
@@ -91,9 +93,8 @@ generate_file_function(std::ostream &out, const fs::path &source) {
       "std::set<fs::path>& exclude={{}} /*not used*/, const std::string& _name "
       "= {{}} /*not used*/){{\n",
       name);
-  out << std::format(
-      R"(struct init_t{{ init_t(){{fs_tree.emplace("{}",{});}} }} static init;)",
-      escape_c_str(fs::relative(source, BASE)), name);
+  fn_table << std::format(R"(fs_tree.emplace("{}",{});)",
+                          escape_c_str(fs::relative(source, BASE)), name);
   out << std::format("static constexpr int perms = {};",
                      (int)fs::status(source).permissions());
   out << std::format("static constexpr const char* name  = \"{}\";\n",
@@ -172,7 +173,8 @@ generate_file_function(std::ostream &out, const fs::path &source) {
 
 // Mostly binary files which should not be edited but still copied.
 std::pair<writer_status_t, std::string>
-generate_raw_function(std::ostream &out, const fs::path &source) {
+generate_raw_function(std::ostream &out, std::ostream &fn_table,
+                      const fs::path &source) {
   static int counter = 0;
 
   // Read file contents
@@ -194,9 +196,8 @@ generate_raw_function(std::ostream &out, const fs::path &source) {
       "std::set<fs::path>& exclude={{}} /*not used*/, const std::string& _name "
       "= {{}} /*not used*/){{\n",
       name);
-  out << std::format(
-      R"(struct init_t{{ init_t(){{fs_tree.emplace("{}",{});}} }} static init;)",
-      escape_c_str(fs::relative(source, BASE)), name);
+  fn_table << std::format(R"(fs_tree.emplace("{}",{});)",
+                          escape_c_str(fs::relative(source, BASE)), name);
   out << std::format("static constexpr int perms = {};",
                      (int)fs::status(source).permissions());
   out << std::format("static constexpr const char* name  = \"{}\";\n",
@@ -237,7 +238,8 @@ generate_raw_function(std::ostream &out, const fs::path &source) {
 }
 
 std::pair<writer_status_t, std::string>
-generate_link_function(std::ostream &out, const fs::path &source) {
+generate_link_function(std::ostream &out, std::ostream &fn_table,
+                       const fs::path &source) {
   static int counter = 0;
   std::string name = std::format("writer_link_{}", counter++);
   out << std::format(
@@ -247,9 +249,8 @@ generate_link_function(std::ostream &out, const fs::path &source) {
       name);
   out << std::format("static constexpr int perms = {};",
                      (int)fs::status(source).permissions());
-  out << std::format(
-      R"(struct init_t{{ init_t(){{fs_tree.emplace("{}",{});}} }} static init;)",
-      escape_c_str(fs::relative(source, BASE)), name);
+  fn_table << std::format(R"(fs_tree.emplace("{}",{});)",
+                          escape_c_str(fs::relative(source, BASE)), name);
   out << std::format("static constexpr const char* name  = \"{}\";\n",
                      escape_c_str(source.filename()));
   out << "fs::path file = dir / (_name.length()!=0?_name.c_str():name);\n";
@@ -268,7 +269,8 @@ generate_link_function(std::ostream &out, const fs::path &source) {
 
 // Function to generate folder functions
 std::pair<writer_status_t, std::string>
-generate_folder_function(std::ostream &out, const fs::path &source,
+generate_folder_function(std::ostream &out, std::ostream &fn_table,
+                         const fs::path &source,
                          const std::set<fs::path> &exclude = {},
                          const std::set<fs::path> &exclude_ext = {}) {
   static int counter = 0;
@@ -286,7 +288,7 @@ generate_folder_function(std::ostream &out, const fs::path &source,
 
     // Special case to resolve symbolic links.
     if (entry.is_symlink()) {
-      auto t = generate_link_function(out, entry);
+      auto t = generate_link_function(out, fn_table, entry);
       if (t.first == WRITER_STATUS_ERROR)
         return {WRITER_STATUS_ERROR, ""};
       else
@@ -296,7 +298,7 @@ generate_folder_function(std::ostream &out, const fs::path &source,
 
     // Folders are ignored in this context.
     if (entry.is_directory()) {
-      auto t = generate_folder_function(out, entry, exclude);
+      auto t = generate_folder_function(out, fn_table, entry, exclude);
       if (t.first == WRITER_STATUS_ERROR)
         return {WRITER_STATUS_ERROR, ""};
       else
@@ -306,7 +308,7 @@ generate_folder_function(std::ostream &out, const fs::path &source,
 
     // Skip templating for selected extensions
     if (exclude_ext.find(entry.path().extension()) != exclude_ext.end()) {
-      auto t = generate_raw_function(out, entry);
+      auto t = generate_raw_function(out, fn_table, entry);
       if (t.first == WRITER_STATUS_ERROR)
         return {WRITER_STATUS_ERROR, ""};
       else
@@ -314,7 +316,7 @@ generate_folder_function(std::ostream &out, const fs::path &source,
       continue;
     }
 
-    auto t = generate_file_function(out, entry);
+    auto t = generate_file_function(out, fn_table, entry);
     if (t.first == WRITER_STATUS_ERROR)
       return {WRITER_STATUS_ERROR, ""};
     else
@@ -327,9 +329,8 @@ generate_folder_function(std::ostream &out, const fs::path &source,
       name);
   out << std::format("static constexpr int perms = {};",
                      (int)fs::status(source).permissions());
-  out << std::format(
-      R"(struct init_t{{ init_t(){{fs_tree.emplace("{}",{});}} }} static init;)",
-      escape_c_str(fs::relative(source, BASE)), name);
+  fn_table << std::format(R"(fs_tree.emplace("{}",{});)",
+                          escape_c_str(fs::relative(source, BASE)), name);
   out << std::format("static constexpr const char* name  = \"{}\";\n",
                      escape_c_str(source.filename()));
   out << "fs::path file = dir / (_name.length()!=0?_name.c_str():name);\n";
@@ -372,6 +373,7 @@ int main(int argc, char *argv[]) {
               << " already there. It will not be overwritten\n";
   } else {
     std::ofstream out(file, std::ios::binary);
+    std::ostringstream fn_table;
 #ifdef TE4_COMPRESS
     out << "#ifndef TE4_INTERNAL\n#define TE4_COMPRESS\n#endif";
 #endif
@@ -506,9 +508,6 @@ typedef pugi::xml_node env_t;
 
 std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude, const std::string& _name)> fs_tree;
 
-#if __has_include("head.frag.cpp")
-  #include "head.frag.cpp"
-#endif
 )";
 
     pugi::xml_document doc = {};
@@ -519,7 +518,7 @@ std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, con
 
     BASE = argv[1];
 
-    generate_folder_function(out, BASE, {});
+    generate_folder_function(out, fn_table, BASE, {});
     out <<
         R"(
 #ifndef TE4_INTERNAL
@@ -527,9 +526,11 @@ int main(int argc, const char* argv[]){
     if(argc<3)exit(1);
     pugi::xml_document doc;
     doc.load_file(/*(fs::path(getenv("PWD"))/argv[2]).c_str()*/argv[2]);
-
+)";
+    out << fn_table.str();
+    out << R"(
     //Default entry point. Change by adding exclusions and further calls if you need to change its behaviour
-    #if !__has_include("body.frag.cpp")
+    #if !__has_include("impl.frag.cpp")
 )";
 
     for (auto &entry : doc.child("project").child("steps").children()) {
@@ -545,7 +546,7 @@ int main(int argc, const char* argv[]){
     }
     out << R"(
     #else
-        #include "body.frag.cpp"
+        #include "impl.frag.cpp"
     #endif
 )";
 

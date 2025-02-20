@@ -130,11 +130,8 @@ typedef pugi::xml_node env_t;
 
 std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude, const std::string& _name)> fs_tree;
 
-#if __has_include("head.frag.cpp")
-  #include "head.frag.cpp"
-#endif
 writer_status_t writer_file_0(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
-struct init_t{ init_t(){fs_tree.emplace("build.sh",writer_file_0);} } static init;static constexpr int perms = 509;static constexpr const char* name  = "build.sh";
+static constexpr int perms = 509;static constexpr const char* name  = "build.sh";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_0.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -150,7 +147,7 @@ fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_1(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
-struct init_t{ init_t(){fs_tree.emplace("LICENCE.md",writer_file_1);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "LICENCE.md";
+static constexpr int perms = 436;static constexpr const char* name  = "LICENCE.md";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_1.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -213,7 +210,7 @@ fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_2(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
-struct init_t{ init_t(){fs_tree.emplace(".gitignore",writer_file_2);} } static init;static constexpr int perms = 436;static constexpr const char* name  = ".gitignore";
+static constexpr int perms = 436;static constexpr const char* name  = ".gitignore";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_2.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -229,7 +226,7 @@ fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_3(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
-struct init_t{ init_t(){fs_tree.emplace("meson.build",writer_file_3);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "meson.build";
+static constexpr int perms = 436;static constexpr const char* name  = "meson.build";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_3.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -240,14 +237,10 @@ std::ofstream out(file, std::ios::binary);
     auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
 #endif
     out.write((const char*)dtmp.data(),dtmp.size());
-} auto proj_name = env.child("project").attribute("name").as_string("undefined"); {constexpr const uint8_t tmp[] = {0X1,0X0,0X0,0X0,0X78,0X9C,0X1,0X1,0X0,0XFE,0XFF,0XA,0X0,0XB,0X0,0XB,};
-#ifdef TE4_COMPRESS
-    auto dtmp = inflate({tmp,sizeof(tmp)});
-#else
-    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
-#endif
-    out.write((const char*)dtmp.data(),dtmp.size());
-} auto proj_version = env.child("project").attribute("version").as_string("0.1.0"); {constexpr const uint8_t tmp[] = {0XF,0X0,0X0,0X0,0X78,0X9C,0X1,0XF,0X0,0XF0,0XFF,0XA,0X70,0X72,0X6F,0X6A,0X65,0X63,0X74,0X28,0XA,0X20,0X20,0X20,0X20,0X27,0X24,0X99,0X3,0XDB,};
+}
+auto proj_name = env.child("project").attribute("name").as_string("undefined");
+auto proj_version = env.child("project").attribute("version").as_string("0.1.0");
+{constexpr const uint8_t tmp[] = {0XE,0X0,0X0,0X0,0X78,0X9C,0X1,0XE,0X0,0XF1,0XFF,0X70,0X72,0X6F,0X6A,0X65,0X63,0X74,0X28,0XA,0X20,0X20,0X20,0X20,0X27,0X24,0X2,0X3,0XD1,};
 #ifdef TE4_COMPRESS
     auto dtmp = inflate({tmp,sizeof(tmp)});
 #else
@@ -294,7 +287,7 @@ fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_4(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
-struct init_t{ init_t(){fs_tree.emplace("README.md",writer_file_4);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "README.md";
+static constexpr int perms = 436;static constexpr const char* name  = "README.md";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_4.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -329,7 +322,7 @@ fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_5(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
-struct init_t{ init_t(){fs_tree.emplace("subprojects/pugixml.wrap",writer_file_5);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "pugixml.wrap";
+static constexpr int perms = 436;static constexpr const char* name  = "pugixml.wrap";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_5.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -345,7 +338,7 @@ fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_6(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
-struct init_t{ init_t(){fs_tree.emplace("subprojects/miniz.wrap",writer_file_6);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "miniz.wrap";
+static constexpr int perms = 436;static constexpr const char* name  = "miniz.wrap";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_6.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -361,7 +354,7 @@ fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_dir_1(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={}, const std::string& _name = {}){
-static constexpr int perms = 509;struct init_t{ init_t(){fs_tree.emplace("subprojects",writer_dir_1);} } static init;static constexpr const char* name  = "subprojects";
+static constexpr int perms = 509;static constexpr const char* name  = "subprojects";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 fs::create_directories(file);
 if(exclude.find(file)==exclude.end())writer_file_5(file, env, exclude);
@@ -370,7 +363,7 @@ fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_7(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
-struct init_t{ init_t(){fs_tree.emplace("meson.options",writer_file_7);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "meson.options";
+static constexpr int perms = 436;static constexpr const char* name  = "meson.options";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_7.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -386,7 +379,7 @@ fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_8(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
-struct init_t{ init_t(){fs_tree.emplace("platforms/default.ini",writer_file_8);} } static init;static constexpr int perms = 436;static constexpr const char* name  = "default.ini";
+static constexpr int perms = 436;static constexpr const char* name  = "default.ini";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_8.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
@@ -402,7 +395,7 @@ fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_dir_2(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={}, const std::string& _name = {}){
-static constexpr int perms = 509;struct init_t{ init_t(){fs_tree.emplace("platforms",writer_dir_2);} } static init;static constexpr const char* name  = "platforms";
+static constexpr int perms = 509;static constexpr const char* name  = "platforms";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 fs::create_directories(file);
 if(exclude.find(file)==exclude.end())writer_file_8(file, env, exclude);
@@ -410,7 +403,7 @@ fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_dir_0(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={}, const std::string& _name = {}){
-static constexpr int perms = 509;struct init_t{ init_t(){fs_tree.emplace(".",writer_dir_0);} } static init;static constexpr const char* name  = "";
+static constexpr int perms = 509;static constexpr const char* name  = "";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 fs::create_directories(file);
 if(exclude.find(file)==exclude.end())writer_file_0(file, env, exclude);
@@ -430,13 +423,13 @@ int main(int argc, const char* argv[]){
     if(argc<3)exit(1);
     pugi::xml_document doc;
     doc.load_file(/*(fs::path(getenv("PWD"))/argv[2]).c_str()*/argv[2]);
-
+fs_tree.emplace("build.sh",writer_file_0);fs_tree.emplace("LICENCE.md",writer_file_1);fs_tree.emplace(".gitignore",writer_file_2);fs_tree.emplace("meson.build",writer_file_3);fs_tree.emplace("README.md",writer_file_4);fs_tree.emplace("subprojects/pugixml.wrap",writer_file_5);fs_tree.emplace("subprojects/miniz.wrap",writer_file_6);fs_tree.emplace("subprojects",writer_dir_1);fs_tree.emplace("meson.options",writer_file_7);fs_tree.emplace("platforms/default.ini",writer_file_8);fs_tree.emplace("platforms",writer_dir_2);fs_tree.emplace(".",writer_dir_0);
     //Default entry point. Change by adding exclusions and further calls if you need to change its behaviour
-    #if !__has_include("body.frag.cpp")
+    #if !__has_include("impl.frag.cpp")
         writer_dir_0(argv[1], doc.root());
 
     #else
-        #include "body.frag.cpp"
+        #include "impl.frag.cpp"
     #endif
 
     return 0;
