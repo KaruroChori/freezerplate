@@ -1,6 +1,6 @@
-- [ ] Make `<?` and `?>` user configurable (via XML file)
-- [ ] Accept skippable files/directories/file types (via XML file)
+- [x] Make `<?` and `?>` user configurable (via XML file)
 - [x] Introduce "custom steps" as part of the XML used to generate the parser instead of requiring manual work.
+- [ ] Accept skippable files/directories/file types (via XML file)
 - [x] Flag to force override during generation
 - [x] Initial support for escaping in some classes of languages
 - [x] Generate index of files (so to call them with a decent and stable name)
