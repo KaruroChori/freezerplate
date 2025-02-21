@@ -293,7 +293,7 @@ generate_folder_function(ctx_t &ctx, const fs::path &source,
   for (const auto &entry : fs::directory_iterator(source)) {
     if (!entry.is_regular_file() && !entry.is_symlink() &&
         !entry.is_directory()) {
-      throw std::runtime_error("Unallowed file type in tempalte dir");
+      throw std::runtime_error("Unallowed file type in template dir");
     }
 
     if (exclude.find(entry) != exclude.end()) {
