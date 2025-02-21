@@ -513,7 +513,7 @@ public:
     inline static std::string YEAR() { return currentYear; }
     inline static std::string DATE() { return currentDate; }
     inline static std::string CLOCK() { return currentTime; }
-    inline static std::string TIMESTAMP() { return timestamp; }
+    inline static std::string STAMP() { return timestamp; }
 
 public:
     // Static function to initialize the static variables
@@ -778,7 +778,6 @@ int main(int argc, char* argv[]){
 
     std::string dest_folder;
     std::string src_file;
-    bool no_bundle = false;
 
     pugi::xml_document doc = {};
 
