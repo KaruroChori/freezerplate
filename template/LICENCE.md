@@ -25,7 +25,7 @@ static std::map<std::string, std::string> common_licences = {
     {"CC-Zero-v1.0", "https://creativecommons.org/publicdomain/zero/1.0/"},
 };
 
-auto proj_licence = env.child("project").child("licences");
+auto proj_licence = env.child("project").child("licence");
 auto proj_author = env.child("project").attribute("author").as_string("Unknown Author");
 if(!proj_licence){?>
 
@@ -33,6 +33,6 @@ All rights reserved by <?WRITE(proj_author)?>
 
 <?
 }
-else for (pugi::xml_node child: proj_licence.children())
-    if (child.type() == pugi::node_pcdata)
-        WRITE(child.value());?>
+/*else if(proj_licence.attribute("mnemonic").as_string(nullptr)!=nullptr){
+    
+}*/else WRITE("/project/licence~!txt"_attr(env).value_or("All rights reserved"))?>

@@ -335,7 +335,7 @@ static std::map<std::string, std::string> common_licences = {
     {"CC-Zero-v1.0", "https://creativecommons.org/publicdomain/zero/1.0/"},
 };
 
-auto proj_licence = env.child("project").child("licences");
+auto proj_licence = env.child("project").child("licence");
 auto proj_author = env.child("project").attribute("author").as_string("Unknown Author");
 if(!proj_licence){{constexpr const uint8_t tmp[] = {0X18,0X0,0X0,0X0,0X78,0X9C,0X1,0X18,0X0,0XE7,0XFF,0XA,0X41,0X6C,0X6C,0X20,0X72,0X69,0X67,0X68,0X74,0X73,0X20,0X72,0X65,0X73,0X65,0X72,0X76,0X65,0X64,0X20,0X62,0X79,0X20,0X66,0XF6,0X8,0X70,};
 #ifdef TE4_COMPRESS
@@ -353,9 +353,9 @@ if(!proj_licence){{constexpr const uint8_t tmp[] = {0X18,0X0,0X0,0X0,0X78,0X9C,0
     out.write((const char*)dtmp.data(),dtmp.size());
 }
 }
-else for (pugi::xml_node child: proj_licence.children())
-    if (child.type() == pugi::node_pcdata)
-        WRITE(child.value());out.close();
+/*else if(proj_licence.attribute("mnemonic").as_string(nullptr)!=nullptr){
+    
+}*/else WRITE("/project/licence~!txt"_attr(env).value_or("All rights reserved"))out.close();
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
@@ -452,7 +452,14 @@ std::ofstream out(file, std::ios::binary);
     auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
 #endif
     out.write((const char*)dtmp.data(),dtmp.size());
-}WRITE_XML("/project~name"_attr(env).value_or("undefined")){constexpr const uint8_t tmp[] = {0X2C,0X0,0X0,0X0,0X78,0X9C,0X1,0X2C,0X0,0XD3,0XFF,0XA,0XA,0X43,0X75,0X73,0X74,0X6F,0X6D,0X20,0X74,0X65,0X6D,0X70,0X6C,0X61,0X74,0X65,0X20,0X62,0X75,0X69,0X6C,0X64,0X65,0X72,0X2E,0XA,0XA,0X23,0X23,0X20,0X44,0X65,0X73,0X63,0X72,0X69,0X70,0X74,0X69,0X6F,0X6E,0XA,0XA,0X47,0XCD,0XE,0X53,};
+}WRITE_XML("/project~name"_attr(env).value_or("undefined")){constexpr const uint8_t tmp[] = {0X67,0X0,0X0,0X0,0X78,0X9C,0X4D,0XCA,0X31,0XE,0X80,0X20,0XC,0X0,0XC0,0X9D,0X57,0X74,0XD4,0X45,0X76,0X57,0X46,0X9F,0X60,0X1C,0X80,0X54,0X21,0X81,0X94,0X94,0X36,0X46,0X5F,0XAF,0X71,0X72,0XBE,0X33,0XC6,0X69,0X17,0XAA,0XD0,0X3C,0XFB,0X8A,0XC2,0X39,0X82,0X60,0X6D,0XC5,0XB,0X42,0XD0,0X5C,0X4,0XCE,0X2C,0X9,0XD6,0X9D,0X11,0X6F,0XE4,0XF,0XB6,0X21,0X89,0XB4,0X3E,0X5B,0X7B,0XBC,0XA6,0X61,0X8A,0X54,0XED,0XE2,0X59,0X99,0X5C,0X22,0XCE,0XF6,0X9F,0X47,0X8,0X17,0X3C,0XBF,0X21,0X26,0X48,};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+}WRITE_XML("/project~author"_attr(env).value_or("anonymous")){constexpr const uint8_t tmp[] = {0X3,0X0,0X0,0X0,0X78,0X9C,0X1,0X3,0X0,0XFC,0XFF,0X2E,0XA,0XA,0X0,0XAB,0X0,0X43,};
 #ifdef TE4_COMPRESS
     auto dtmp = inflate({tmp,sizeof(tmp)});
 #else
@@ -460,11 +467,49 @@ std::ofstream out(file, std::ios::binary);
 #endif
     out.write((const char*)dtmp.data(),dtmp.size());
 }
-auto proj_description = env.child("project").child("description");
-for (pugi::xml_node child: proj_description.children()){
-    if (child.type() == pugi::node_pcdata)
-        WRITE(child.value());
-}{constexpr const uint8_t tmp[] = {0X2E,0X0,0X0,0X0,0X78,0X9C,0XE3,0X52,0X56,0X56,0XF0,0XC8,0X2F,0X57,0X28,0XC9,0X57,0X48,0XCE,0XCF,0X2D,0XC8,0XCC,0X49,0XE5,0XE2,0X42,0X8,0X95,0X16,0X43,0XB8,0X3E,0X99,0XC9,0XA9,0X79,0XC9,0XA9,0X5C,0X0,0X2C,0X43,0XC,0XFA,};
+auto repo = "/project~repo"_attr(env);
+if(repo.has_value()){
+{constexpr const uint8_t tmp[] = {0X1F,0X0,0X0,0X0,0X78,0X9C,0X1,0X1F,0X0,0XE0,0XFF,0XA,0X59,0X6F,0X75,0X20,0X63,0X61,0X6E,0X20,0X66,0X69,0X6E,0X64,0X20,0X75,0X73,0X20,0X69,0X6E,0X20,0X5B,0X6F,0X75,0X72,0X20,0X72,0X65,0X70,0X6F,0X5D,0X28,0XA3,0XE7,0XA,0X86,};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+}WRITE_XML(repo.value()){constexpr const uint8_t tmp[] = {0X4,0X0,0X0,0X0,0X78,0X9C,0X1,0X4,0X0,0XFB,0XFF,0X29,0X2E,0XA,0XA,0X1,0X50,0X0,0X6C,};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+}
+}
+{constexpr const uint8_t tmp[] = {0X11,0X0,0X0,0X0,0X78,0X9C,0X1,0X11,0X0,0XEE,0XFF,0XA,0X23,0X23,0X20,0X44,0X65,0X73,0X63,0X72,0X69,0X70,0X74,0X69,0X6F,0X6E,0XA,0XA,0X29,0XFA,0X5,0X9,};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+}
+auto description = "/project/description~!txt"_attr(env);
+WRITE_XML(description.value_or("No description provided"))
+{constexpr const uint8_t tmp[] = {0X4,0X2,0X0,0X0,0X78,0X9C,0X55,0X91,0X31,0X4F,0XC3,0X30,0X10,0X85,0X77,0XFF,0X8A,0X93,0X58,0XA0,0X2D,0X89,0X4,0X5B,0XB7,0X8A,0X5,0X6,0XC4,0X0,0XB,0XAA,0X90,0XEA,0XA6,0X97,0XE4,0X54,0XC7,0X17,0XCE,0X76,0X22,0XF8,0XF5,0X9C,0X13,0X85,0XC2,0X64,0XFB,0XFC,0XFC,0XEE,0X7B,0X3E,0X73,0X75,0X5,0X8F,0X3C,0X42,0X64,0XA8,0XB8,0XEB,0XC9,0XA1,0X31,0XEF,0X9C,0X60,0X24,0XE7,0XC0,0X23,0X9E,0XB6,0XC6,0XDC,0XC2,0XE,0X4,0X2B,0XF4,0X11,0X6,0X94,0X40,0XEC,0X81,0X6B,0XD8,0X77,0X18,0XD8,0X7F,0X5C,0XB7,0X31,0XF6,0X61,0X5B,0X96,0XD3,0XF1,0X98,0XC8,0X9D,0XA,0X75,0X2A,0X6F,0XA,0X78,0X4E,0XEC,0XCB,0X57,0XDB,0X25,0XB1,0X34,0X1B,0X5A,0X17,0X18,0X46,0X96,0XF3,0X6,0X8E,0X29,0X2,0X45,0XF5,0XFD,0X4C,0X24,0X18,0XA0,0X6A,0XAD,0X6F,0X74,0X25,0XF,0XB1,0X45,0X38,0XDA,0XD0,0X42,0XA8,0X84,0XFA,0X8,0X35,0X8B,0XCA,0XD5,0X98,0X7C,0X53,0X28,0XCD,0X53,0XD,0X5F,0X19,0XD1,0X2A,0XD0,0X85,0X7B,0X92,0XAD,0X56,0XA3,0XD,0XDD,0XFD,0XDD,0X6A,0X35,0X4B,0X96,0X14,0X93,0XA7,0XB3,0X11,0XC3,0XBF,0XC,0XB9,0XBA,0XFF,0XA6,0X46,0X6D,0XD8,0X29,0X1,0XFD,0XC9,0XA3,0X65,0XA7,0X48,0X5,0X4B,0X93,0XC3,0XBC,0XA8,0X56,0X96,0X5E,0X12,0XC0,0XA,0XC2,0X40,0XF6,0XE8,0X70,0XCE,0XF2,0XDB,0XAE,0XB5,0X3,0X66,0XAC,0X5E,0X78,0XA0,0X13,0XE6,0XB,0X1,0X1E,0XBD,0XBE,0XF5,0X35,0X35,0XFA,0X19,0X31,0X77,0XAF,0XD5,0X26,0X4C,0XCC,0X6A,0XDC,0XE5,0X58,0X3B,0X8,0XA9,0XEF,0X59,0XA2,0XE2,0X3E,0XAC,0XD7,0X17,0XA6,0XD,0X38,0X3A,0X23,0X74,0X7C,0X42,0X51,0X9B,0X4C,0X5,0XFA,0XAE,0XA9,0XAA,0X25,0X4B,0X28,0X8C,0X79,0X6B,0XD1,0X83,0X24,0XAF,0X3,0X3B,0X1C,0XE,0XF9,0XFF,0X4C,0X51,0XCE,0XF3,0XD0,0XAD,0X96,0X8C,0XB9,0XCC,0X3A,0X5,0X9D,0XF3,0X22,0XFB,0X1,0X87,0X37,0XB1,0XBF,};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+}WRITE_XML("/project~name"_attr(env).value_or("undefined")){constexpr const uint8_t tmp[] = {0X28,0X0,0X0,0X0,0X78,0X9C,0X1,0X28,0X0,0XD7,0XFF,0X20,0X64,0X65,0X73,0X74,0X2D,0X64,0X69,0X72,0X20,0X5B,0X63,0X6F,0X6E,0X66,0X69,0X67,0X2E,0X78,0X6D,0X6C,0X5D,0XA,0X60,0X60,0X60,0XA,0XA,0X23,0X23,0X20,0X4C,0X69,0X63,0X65,0X6E,0X63,0X65,0XA,0XA,0X12,0X43,0XC,0X75,};
+#ifdef TE4_COMPRESS
+    auto dtmp = inflate({tmp,sizeof(tmp)});
+#else
+    auto dtmp = std::basic_string_view<uint8_t>(tmp,sizeof(tmp));
+#endif
+    out.write((const char*)dtmp.data(),dtmp.size());
+}WRITE_XML("/project/licence~mnemonic"_attr(env).value_or("Unkown")){constexpr const uint8_t tmp[] = {0X24,0X0,0X0,0X0,0X78,0X9C,0X1,0X24,0X0,0XDB,0XFF,0X2C,0X20,0X63,0X68,0X65,0X63,0X6B,0X20,0X5B,0X2E,0X2F,0X4C,0X49,0X43,0X45,0X4E,0X43,0X45,0X2E,0X6D,0X64,0X5D,0X20,0X66,0X6F,0X72,0X20,0X64,0X65,0X74,0X61,0X69,0X6C,0X73,0X2E,0XA,0XC6,0XA3,0XB,0X17,};
 #ifdef TE4_COMPRESS
     auto dtmp = inflate({tmp,sizeof(tmp)});
 #else
@@ -533,9 +578,26 @@ fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 writer_status_t writer_file_8(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
-static constexpr int perms = 436;static constexpr const char* name  = "default.ini";
+static constexpr int perms = 436;static constexpr const char* name  = "page.1";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_8.\n";return WRITER_STATUS_SKIP;}
+std::ofstream out(file, std::ios::binary);
+out.close();
+fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
+return WRITER_STATUS_OK;
+}
+writer_status_t writer_dir_2(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={}, const std::string& _name = {}){
+static constexpr int perms = 509;static constexpr const char* name  = "man";
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
+fs::create_directories(file);
+if(exclude.find(file)==exclude.end())writer_file_8(file, env, exclude);
+fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
+return WRITER_STATUS_OK;
+}
+writer_status_t writer_file_9(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
+static constexpr int perms = 436;static constexpr const char* name  = "default.ini";
+fs::path file = dir / (_name.length()!=0?_name.c_str():name);
+if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_9.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
 {constexpr const uint8_t tmp[] = {0X7C,0X1,0X0,0X0,0X78,0X9C,0XBD,0X8E,0XB1,0XE,0XC2,0X30,0XC,0X44,0XF7,0X7E,0X85,0X25,0X6,0XF,0XAD,0X27,0XE6,0X7E,0X3,0X1F,0X50,0X55,0X28,0X35,0X21,0X58,0X84,0X24,0X4A,0X1C,0XBE,0X9F,0XB4,0X9D,0X98,0X2B,0X75,0XBA,0XD3,0XE9,0XEE,0XE9,0XA6,0XA5,0X8A,0X57,0X92,0X0,0X31,0XA9,0XC4,0X50,0XE6,0X8E,0XEF,0X26,0XBB,0X2,0X23,0X4C,0X48,0X1F,0X93,0XF9,0X35,0X6,0XA3,0XF2,0XB5,0X38,0X0,0XD2,0XED,0XBA,0XC9,0XD3,0X6B,0XDC,0X4D,0X2D,0X96,0XBC,0X84,0XB7,0XCD,0X94,0X7C,0X75,0X12,0X70,0X25,0XAC,0XC9,0X41,0XCC,0X0,0X33,0X5C,0X90,0X8A,0XB6,0X15,0X6F,0XA5,0XDD,0XB6,0XDA,0XE2,0X98,0XB1,0XEB,0X38,0XA5,0XE3,0X57,0X1B,0XE3,0X84,0XB3,0XFF,0X49,0XD1,0X7,0XF7,0X3D,0XFE,0X0,0XA9,0X62,0X79,0X1C,};
 #ifdef TE4_COMPRESS
@@ -548,10 +610,10 @@ std::ofstream out(file, std::ios::binary);
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
-writer_status_t writer_file_9(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
+writer_status_t writer_file_10(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
 static constexpr int perms = 436;static constexpr const char* name  = "zig-wasm32.ini";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
-if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_9.\n";return WRITER_STATUS_SKIP;}
+if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_10.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
 {constexpr const uint8_t tmp[] = {0X71,0X2,0X0,0X0,0X78,0X9C,0X9D,0X90,0XBB,0X6E,0XC3,0X30,0XC,0X45,0X77,0X7F,0X85,0X80,0XE,0X1A,0X12,0X25,0X40,0X3B,0X7B,0XEB,0X5F,0X4,0X85,0XC1,0XC8,0XB4,0X43,0X54,0X2F,0X88,0X34,0X5A,0XF7,0XEB,0X4B,0XDB,0X1D,0X9C,0X8E,0XDE,0XA8,0X73,0X75,0XF9,0XB8,0X2F,0X11,0X39,0X27,0XC3,0X28,0X53,0X31,0XCE,0X55,0XF4,0X39,0XD,0X34,0X4E,0X15,0XCD,0X7D,0XA2,0XD0,0X5F,0X15,0XAE,0X85,0XCC,0X5,0XDB,0X8A,0X1,0X81,0X51,0X99,0XAF,0X99,0XD9,0XD,0X14,0XD0,0X5C,0XAE,0X25,0X80,0XC,0XB9,0X46,0XBE,0XFE,0XD0,0XE8,0XBE,0X80,0XE3,0XDB,0XEB,0X85,0X12,0X19,0XF7,0XDE,0XE3,0X0,0X53,0X90,0X2E,0XD0,0XBD,0X42,0X9D,0X5B,0X16,0X10,0XF2,0X4D,0X73,0XBB,0X53,0X82,0X4A,0XC8,0X1F,0X8D,0X37,0XAD,0XB9,0X59,0X75,0XDA,0XB3,0XB1,0XDE,0X5B,0X25,0XA5,0X3C,0XB1,0XD3,0X49,0X21,0XD4,0X3D,0X83,0XAA,0XA8,0X42,0XD2,0XBE,0X7B,0XBC,0X11,0X95,0XFE,0XF1,0XD,0XF6,0X21,0X48,0XCE,0X61,0X2F,0XFC,0X21,0X15,0X59,0X2A,0X3D,0X8D,0X5D,0X81,0XA,0XBA,0XAB,0X6,0X20,0X8E,0X92,0XC9,0X45,0X28,0XA7,0X65,0XE7,0XE,0XEA,0XC8,0XEB,0X6F,0XE7,0X44,0X6B,0X94,0X76,0XBB,0X7B,0X39,0X9F,0XEC,0XD9,0XBA,0X21,0X65,0X87,0XDF,0X1E,0X37,0XCB,0X72,0X95,0X86,0X90,0X3E,0X8F,0X18,0X4B,0X39,0XE8,0X3A,0X38,0XB0,0XB9,0X3D,0X32,0X4B,0X17,0XC1,0X3F,0X28,0XA1,0X46,0X33,0XB3,0X60,0XD4,0X1E,0X16,0X23,0X7B,0X4D,0X45,0X30,0X59,0X1D,0X30,0X75,0X3,0X44,0XA,0XF3,0XA2,0X6C,0X3D,0X57,0XBA,0X7F,0X62,0XEA,0X9,0XD2,0X42,0X2,0X89,0X4,0XB4,0XBF,0XD4,0XB4,0XCE,0XFD,};
 #ifdef TE4_COMPRESS
@@ -564,22 +626,22 @@ std::ofstream out(file, std::ios::binary);
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
-writer_status_t writer_file_10(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
+writer_status_t writer_file_11(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={} /*not used*/, const std::string& _name = {} /*not used*/){
 static constexpr int perms = 436;static constexpr const char* name  = "cosmopolitan.ini";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
-if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_10.\n";return WRITER_STATUS_SKIP;}
+if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_11.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
 out.close();
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
-writer_status_t writer_dir_2(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={}, const std::string& _name = {}){
+writer_status_t writer_dir_3(const fs::path& dir, const env_t& env, const std::set<fs::path>& exclude={}, const std::string& _name = {}){
 static constexpr int perms = 509;static constexpr const char* name  = "platforms";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 fs::create_directories(file);
-if(exclude.find(file)==exclude.end())writer_file_8(file, env, exclude);
 if(exclude.find(file)==exclude.end())writer_file_9(file, env, exclude);
 if(exclude.find(file)==exclude.end())writer_file_10(file, env, exclude);
+if(exclude.find(file)==exclude.end())writer_file_11(file, env, exclude);
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
@@ -595,6 +657,7 @@ if(exclude.find(file)==exclude.end())writer_file_4(file, env, exclude);
 if(exclude.find(file)==exclude.end())writer_dir_1(file, env, exclude);
 if(exclude.find(file)==exclude.end())writer_file_7(file, env, exclude);
 if(exclude.find(file)==exclude.end())writer_dir_2(file, env, exclude);
+if(exclude.find(file)==exclude.end())writer_dir_3(file, env, exclude);
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
@@ -609,7 +672,7 @@ int main(int argc, const char* argv[]){
     if(argc<3)exit(1);
     pugi::xml_document doc;
     doc.load_file(/*(fs::path(getenv("PWD"))/argv[2]).c_str()*/argv[2]);
-fs_tree.emplace("build.sh",writer_file_0);fs_tree.emplace("LICENCE.md",writer_file_1);fs_tree.emplace(".gitignore",writer_file_2);fs_tree.emplace("meson.build",writer_file_3);fs_tree.emplace("README.md",writer_file_4);fs_tree.emplace("subprojects/pugixml.wrap",writer_file_5);fs_tree.emplace("subprojects/miniz.wrap",writer_file_6);fs_tree.emplace("subprojects",writer_dir_1);fs_tree.emplace("meson.options",writer_file_7);fs_tree.emplace("platforms/default.ini",writer_file_8);fs_tree.emplace("platforms/zig-wasm32.ini",writer_file_9);fs_tree.emplace("platforms/cosmopolitan.ini",writer_file_10);fs_tree.emplace("platforms",writer_dir_2);fs_tree.emplace(".",writer_dir_0);
+fs_tree.emplace("build.sh",writer_file_0);fs_tree.emplace("LICENCE.md",writer_file_1);fs_tree.emplace(".gitignore",writer_file_2);fs_tree.emplace("meson.build",writer_file_3);fs_tree.emplace("README.md",writer_file_4);fs_tree.emplace("subprojects/pugixml.wrap",writer_file_5);fs_tree.emplace("subprojects/miniz.wrap",writer_file_6);fs_tree.emplace("subprojects",writer_dir_1);fs_tree.emplace("meson.options",writer_file_7);fs_tree.emplace("man/page.1",writer_file_8);fs_tree.emplace("man",writer_dir_2);fs_tree.emplace("platforms/default.ini",writer_file_9);fs_tree.emplace("platforms/zig-wasm32.ini",writer_file_10);fs_tree.emplace("platforms/cosmopolitan.ini",writer_file_11);fs_tree.emplace("platforms",writer_dir_3);fs_tree.emplace(".",writer_dir_0);
     //Default entry point. Change by adding exclusions and further calls if you need to change its behaviour
     #if !__has_include("body.frag.cpp")
         writer_dir_0(argv[1], doc.root());

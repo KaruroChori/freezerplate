@@ -1,5 +1,6 @@
 <!--Typical structure of an environment file to generate custom generators via freezerplate-->
-<!--This is not how the environment files for the final generators must be!-->
+<!--This
+is not how the environment files for the final generators must be!-->
 <project name="example-templ" version="0.1.0" author="karurochari" repo="https://source.com"
     lbrace="&lt;?" rbrace="?&gt;">
     <!--
@@ -18,5 +19,5 @@
     </steps>
     -->
     <description>Simple description of the application</description>
-    <licence mnemonic="GPL2.0"></licence>
+    <licence mnemonic="GPL-2.0">In case it is missing...</licence>
 </project>
