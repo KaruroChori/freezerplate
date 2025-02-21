@@ -6,7 +6,9 @@
 - [x] Generate index of files (so to call them with a decent and stable name)
 - [x] Added support for raw files not needing templating
 - [x] Permissions from the original file are not preserved. Well, do it.
-- [ ] Macro to simplify access to the XML document
-- [ ] Add man pages
+- [x] Macro to simplify access to the XML document
+- [x] Add man page
 - [ ] Only LF is being handled properly. CRLF ending style is not.
-- [ ] Decompression might be performed more than once at the moment, since past deflated fragments are not stored. 
+- [ ] Decompression might be performed more than once at the moment, since past deflated fragments are not stored.
+- [ ] File/Line referred to the original source files to more easily navigate compilation errors?
+- [ ] Add opts to make fully static builds
