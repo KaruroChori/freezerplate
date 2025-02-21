@@ -9,3 +9,4 @@
 - [ ] Macro to simplify access to the XML document
 - [ ] Add man pages
 - [ ] Only LF is being handled properly. CRLF ending style is not.
+- [ ] Decompression might be performed more than once at the moment, since past deflated fragments are not stored. 

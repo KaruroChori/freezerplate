@@ -372,6 +372,8 @@ extern std::map<fs::path,
                                     const std::string &_name)>
     fs_tree;
 
+extern void g_inits();
+
 void printHelp() {
   std::cout << "Usage: freezeplate [options] source "
                "dest [env-file]\n"
@@ -395,6 +397,7 @@ int main(int argc, char *argv[]) {
   std::string dest_folder;
   std::string src_file;
 
+  g_inits();
   pugi::xml_document doc = {};
 
   /*
@@ -497,6 +500,45 @@ return decompressedData;
 namespace fs = std::filesystem;
 
 bool no_override=true;
+
+class TIME {
+public:
+    // Static variables to store the computed values
+    inline static std::string currentYear;
+    inline static std::string currentDate;
+    inline static std::string currentTime;
+    inline static std::string timestamp;
+    
+public:
+    // Static member functions to get the current year, date, time, and timestamp
+    inline static std::string YEAR() { return currentYear; }
+    inline static std::string DATE() { return currentDate; }
+    inline static std::string CLOCK() { return currentTime; }
+    inline static std::string TIMESTAMP() { return timestamp; }
+
+public:
+    // Static function to initialize the static variables
+    static void initialize() {
+        std::time_t now = std::time(nullptr);
+        std::tm* utcTime = std::gmtime(&now);
+
+        // Get current year
+        currentYear = std::to_string(1900 + utcTime->tm_year);
+
+        // Format current date (YYYY-MM-DD)
+        char dateBuffer[11];
+        std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d", utcTime);
+        currentDate = dateBuffer;
+
+        // Format current time (HH:MM:SS)
+        char timeBuffer[9];
+        std::strftime(timeBuffer, sizeof(timeBuffer), "%H:%M:%S", utcTime);
+        currentTime = timeBuffer;
+
+        // Get timestamp
+        timestamp = std::to_string(now);
+    }
+};
 
 std::string escape_c_str(const std::string &input) {
   std::string escaped;
@@ -602,8 +644,13 @@ std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, con
     generate_folder_function(ctx, ctx.BASE, {});
     ctx.out <<
         R"(
+void g_inits(){
+  TIME::initialize();
+}
+
 #ifndef TE4_INTERNAL
 int main(int argc, const char* argv[]){
+    g_inits();
     if(argc<3)exit(1);
     pugi::xml_document doc;
     doc.load_file(/*(fs::path(getenv("PWD"))/argv[2]).c_str()*/argv[2]);
