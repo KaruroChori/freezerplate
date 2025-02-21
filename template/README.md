@@ -1,4 +1,4 @@
-# <?WRITE_XML(env.child("project").attribute("name").as_string("undefined"))?>
+# <?WRITE_XML("/project~name"_attr(env).value_or("undefined"))?>
 
 Custom template builder.
 

@@ -28,6 +28,17 @@ cli = executable(
     cpp_args: opts
 )
 
+tester = executable(
+    'tester',
+    ['test-xml.cpp'],
+    dependencies: [miniz_dep, pugixml_dep],
+    link_with: [],
+    include_directories: [],
+    install: true,
+    cpp_args: opts
+)
+
+
 install_man('man/freezerplate.1')
 
 install_headers(
