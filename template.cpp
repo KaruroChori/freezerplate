@@ -14,6 +14,7 @@
 #include <vector>
 #include <optional>
 #include <charconv>
+#include <unistd.h>
 
 #include <pugixml.hpp>
 
@@ -285,7 +286,7 @@ static constexpr int perms = 509;static constexpr const char* name  = "build.sh"
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 if(fs::exists(file) && no_override){std::cerr<<"File "<<file<<" already there. It will not be overwritten by rule writer_file_0.\n";return WRITER_STATUS_SKIP;}
 std::ofstream out(file, std::ios::binary);
-{constexpr const uint8_t tmp[] = {0X6A,0X0,0X0,0X0,0X78,0X9C,0X25,0XCC,0X31,0XE,0X80,0X20,0XC,0X46,0XE1,0XDD,0X53,0XD4,0X38,0X13,0X4E,0XE0,0XA4,0XF7,0X30,0XA0,0XBF,0X4A,0X52,0XC1,0XD0,0X76,0XF0,0XF6,0X1A,0X59,0XDF,0X97,0XBC,0XA1,0XF7,0X31,0X65,0X1F,0X83,0X9C,0XDD,0X5,0X29,0X99,0X4,0X6A,0X37,0XB9,0X39,0X2E,0XAC,0X65,0XD4,0X6A,0X20,0X72,0X2E,0X5A,0XE2,0X4D,0X9F,0X1B,0X63,0X5,0X23,0X8,0XBE,0X56,0XB1,0X96,0XBC,0XA7,0XC3,0X2A,0XE8,0X77,0XDF,0X89,0X6D,0X85,0XDA,0X27,0X65,0XD1,0XC0,0X4C,0X6E,0X6A,0XF8,0X2,0XB5,0XAB,0X25,0X6F,};
+{constexpr const uint8_t tmp[] = {0X81,0X0,0X0,0X0,0X78,0X9C,0X3D,0XCC,0X41,0XE,0XC2,0X30,0XC,0X44,0XD1,0X7D,0X4F,0X61,0XC4,0X3A,0XCA,0X9,0XBA,0X82,0X7B,0XA0,0XA4,0X1D,0XC0,0X92,0X1B,0X47,0XB1,0XBD,0XE0,0XF6,0X54,0X14,0X75,0XFB,0XDF,0X68,0XAE,0X97,0X5C,0XB9,0XE5,0X5A,0XEC,0X3D,0X6D,0X30,0X6D,0X64,0XF0,0XE8,0X94,0XEE,0XF5,0X21,0XAE,0XB3,0X8F,0X0,0X51,0X4A,0X35,0X58,0X56,0XFF,0X74,0XCC,0X3,0X82,0X62,0XD8,0XDB,0XC0,0XA2,0XED,0XC9,0XAF,0X18,0XA0,0X9F,0XE7,0XFF,0XC5,0XA2,0X5B,0X67,0XD9,0X27,0XB7,0XA3,0X4F,0X16,0XAB,0XD2,0X61,0XDC,0XCC,0X8B,0XC8,0X69,0X5F,0X6D,0X87,0X2D,0X64,};
 #ifdef TE4_COMPRESS
     auto dtmp = inflate({tmp,sizeof(tmp)});
 #else
@@ -668,15 +669,67 @@ fs_tree.emplace("build.sh",writer_file_0);fs_tree.emplace("LICENCE.md",writer_fi
 }
 
 #ifndef TE4_INTERNAL
-int main(int argc, const char* argv[]){
+
+void printHelp(const char* arg0) {
+  std::cout << "Usage: "<<arg0<<" [options] source "
+               "dest [env-file]\n"
+            << "Options:\n"
+            << "  -f, --force        Enable the override flag. Existing files "
+               "will be overwritten.\n"
+            << "  -h, --help         Display this help message and exit.\n"
+            << "\n"
+            << "Arguments:\n"
+            << "  destination  Path to the directory where the "
+               "template is expanded.\n"
+            << "  env-file     Name of the environment file in XML "
+               "format. If omitted, content will be read from stdin.\n"
+            << "More info using man pages\n";
+}
+
+int main(int argc, char* argv[]){
     g_inits();
-    if(argc<3)exit(1);
-    pugi::xml_document doc;
-    doc.load_file(/*(fs::path(getenv("PWD"))/argv[2]).c_str()*/argv[2]);
+
+    std::string dest_folder;
+    std::string src_file;
+    bool no_bundle = false;
+
+    pugi::xml_document doc = {};
+
+    int opt;
+    while ((opt = getopt(argc, argv, "fh")) != -1) {
+        switch (opt) {
+        case 'f':
+        no_override = false;
+        break;
+        case 'h':
+        case '?':
+        printHelp(argv[0]);
+        return 1;
+        }
+    }
+
+    // Check positional arguments
+    if (optind < argc) {
+        dest_folder = argv[optind++];
+    } else {
+        std::cerr << "Error: Destination folder is required." << std::endl;
+        return 1;
+    }
+
+    if (optind < argc) {
+        src_file = argv[optind++];
+        doc.load_file(src_file.c_str());
+    } else {
+        std::cout << "Enter file content (Ctrl+D to end):" << std::endl;
+        std::ostringstream buffer;
+        buffer << std::cin.rdbuf(); // Read all input until EOF
+        doc.load_string(buffer.str().c_str());
+    }
+
 fs_tree.emplace("build.sh",writer_file_0);fs_tree.emplace("LICENCE.md",writer_file_1);fs_tree.emplace(".gitignore",writer_file_2);fs_tree.emplace("meson.build",writer_file_3);fs_tree.emplace("README.md",writer_file_4);fs_tree.emplace("subprojects/pugixml.wrap",writer_file_5);fs_tree.emplace("subprojects/miniz.wrap",writer_file_6);fs_tree.emplace("subprojects",writer_dir_1);fs_tree.emplace("meson.options",writer_file_7);fs_tree.emplace("man/page.1",writer_file_8);fs_tree.emplace("man",writer_dir_2);fs_tree.emplace("platforms/default.ini",writer_file_9);fs_tree.emplace("platforms/zig-wasm32.ini",writer_file_10);fs_tree.emplace("platforms/cosmopolitan.ini",writer_file_11);fs_tree.emplace("platforms",writer_dir_3);fs_tree.emplace(".",writer_dir_0);
     //Default entry point. Change by adding exclusions and further calls if you need to change its behaviour
     #if !__has_include("body.frag.cpp")
-        writer_dir_0(argv[1], doc.root());
+        writer_dir_0(dest_folder, doc.root());
 
     #else
         #include "body.frag.cpp"

@@ -375,8 +375,9 @@ extern std::map<fs::path,
 
 extern void g_inits();
 
-void printHelp() {
-  std::cout << "Usage: freezeplate [options] source "
+void printHelp(const char *arg0) {
+  std::cout << "Usage: " << arg0
+            << " [options] source "
                "dest [env-file]\n"
             << "Options:\n"
             << "  -f, --force        Enable the override flag. Existing files "
@@ -394,25 +395,15 @@ void printHelp() {
 }
 
 int main(int argc, char *argv[]) {
+  g_inits();
+
   std::string source_folder;
   std::string dest_folder;
   std::string src_file;
   bool no_bundle = false;
 
-  g_inits();
   pugi::xml_document doc = {};
 
-  /*
-  if (argc < 3) {
-    std::cerr << std::format("Usage: {} TEMPLATE_DIR OUT_DIR [CONFIG_FILE]\n",
-                             argv[0]);
-    exit(1);
-  }
-
-  if (argc >= 5 && strcmp(argv[4], "override") == 0) {
-    no_override = false;
-  }
-*/
   int opt;
   while ((opt = getopt(argc, argv, "fhs")) != -1) {
     switch (opt) {
@@ -424,7 +415,7 @@ int main(int argc, char *argv[]) {
       break;
     case 'h':
     case '?':
-      printHelp();
+      printHelp(argv[0]);
       return 1;
     }
   }
@@ -479,6 +470,7 @@ int main(int argc, char *argv[]) {
 #include <vector>
 #include <optional>
 #include <charconv>
+#include <unistd.h>
 
 #include <pugixml.hpp>
 
@@ -764,11 +756,63 @@ void g_inits(){
 }
 
 #ifndef TE4_INTERNAL
-int main(int argc, const char* argv[]){
+
+void printHelp(const char* arg0) {
+  std::cout << "Usage: "<<arg0<<" [options] source "
+               "dest [env-file]\n"
+            << "Options:\n"
+            << "  -f, --force        Enable the override flag. Existing files "
+               "will be overwritten.\n"
+            << "  -h, --help         Display this help message and exit.\n"
+            << "\n"
+            << "Arguments:\n"
+            << "  destination  Path to the directory where the "
+               "template is expanded.\n"
+            << "  env-file     Name of the environment file in XML "
+               "format. If omitted, content will be read from stdin.\n"
+            << "More info using man pages\n";
+}
+
+int main(int argc, char* argv[]){
     g_inits();
-    if(argc<3)exit(1);
-    pugi::xml_document doc;
-    doc.load_file(/*(fs::path(getenv("PWD"))/argv[2]).c_str()*/argv[2]);
+
+    std::string dest_folder;
+    std::string src_file;
+    bool no_bundle = false;
+
+    pugi::xml_document doc = {};
+
+    int opt;
+    while ((opt = getopt(argc, argv, "fh")) != -1) {
+        switch (opt) {
+        case 'f':
+        no_override = false;
+        break;
+        case 'h':
+        case '?':
+        printHelp(argv[0]);
+        return 1;
+        }
+    }
+
+    // Check positional arguments
+    if (optind < argc) {
+        dest_folder = argv[optind++];
+    } else {
+        std::cerr << "Error: Destination folder is required." << std::endl;
+        return 1;
+    }
+
+    if (optind < argc) {
+        src_file = argv[optind++];
+        doc.load_file(src_file.c_str());
+    } else {
+        std::cout << "Enter file content (Ctrl+D to end):" << std::endl;
+        std::ostringstream buffer;
+        buffer << std::cin.rdbuf(); // Read all input until EOF
+        doc.load_string(buffer.str().c_str());
+    }
+
 )";
     ctx.out << ctx.fn_table.str();
     ctx.out << R"(
@@ -780,12 +824,12 @@ int main(int argc, const char* argv[]){
       auto src = entry.attribute("source").as_string(nullptr);
       if (src != nullptr) {
         ctx.out << std::format(
-            "fs_tree[\"{}\"](argv[1], doc.root(), {{}}, {{}});\n",
+            "fs_tree[\"{}\"](dest_folder, doc.root(), {{}}, {{}});\n",
             escape_c_str(src));
       }
     }
     if (!(doc.child("project").child("steps"))) {
-      ctx.out << R"(        writer_dir_0(argv[1], doc.root());)" << "\n";
+      ctx.out << R"(        writer_dir_0(dest_folder, doc.root());)" << "\n";
     }
     ctx.out << R"(
     #else
