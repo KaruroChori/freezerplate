@@ -1,6 +1,6 @@
 ## Preparing the source folder
 
-## Write templates
+## Writing templates
 
 ## Custom entrypoints
 
@@ -8,4 +8,6 @@
 
 ### Body override
 
-## `env` file for custom templates
+## `env` files
+
+## Macros & helpers

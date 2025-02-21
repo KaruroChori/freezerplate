@@ -556,8 +556,8 @@ writer_status_t writer_dir_1(const fs::path& dir, const env_t& env, const std::s
 static constexpr int perms = 509;static constexpr const char* name  = "subprojects";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 fs::create_directories(file);
-if(exclude.find(file)==exclude.end())writer_file_5(file, env, exclude);
-if(exclude.find(file)==exclude.end())writer_file_6(file, env, exclude);
+if(exclude.find("subprojects/pugixml.wrap")==exclude.end())writer_file_5(file, env, exclude);
+if(exclude.find("subprojects/miniz.wrap")==exclude.end())writer_file_6(file, env, exclude);
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
@@ -590,7 +590,7 @@ writer_status_t writer_dir_2(const fs::path& dir, const env_t& env, const std::s
 static constexpr int perms = 509;static constexpr const char* name  = "man";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 fs::create_directories(file);
-if(exclude.find(file)==exclude.end())writer_file_8(file, env, exclude);
+if(exclude.find("man/page.1")==exclude.end())writer_file_8(file, env, exclude);
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
@@ -639,9 +639,9 @@ writer_status_t writer_dir_3(const fs::path& dir, const env_t& env, const std::s
 static constexpr int perms = 509;static constexpr const char* name  = "platforms";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 fs::create_directories(file);
-if(exclude.find(file)==exclude.end())writer_file_9(file, env, exclude);
-if(exclude.find(file)==exclude.end())writer_file_10(file, env, exclude);
-if(exclude.find(file)==exclude.end())writer_file_11(file, env, exclude);
+if(exclude.find("platforms/default.ini")==exclude.end())writer_file_9(file, env, exclude);
+if(exclude.find("platforms/zig-wasm32.ini")==exclude.end())writer_file_10(file, env, exclude);
+if(exclude.find("platforms/cosmopolitan.ini")==exclude.end())writer_file_11(file, env, exclude);
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
@@ -649,21 +649,22 @@ writer_status_t writer_dir_0(const fs::path& dir, const env_t& env, const std::s
 static constexpr int perms = 509;static constexpr const char* name  = "";
 fs::path file = dir / (_name.length()!=0?_name.c_str():name);
 fs::create_directories(file);
-if(exclude.find(file)==exclude.end())writer_file_0(file, env, exclude);
-if(exclude.find(file)==exclude.end())writer_file_1(file, env, exclude);
-if(exclude.find(file)==exclude.end())writer_file_2(file, env, exclude);
-if(exclude.find(file)==exclude.end())writer_file_3(file, env, exclude);
-if(exclude.find(file)==exclude.end())writer_file_4(file, env, exclude);
-if(exclude.find(file)==exclude.end())writer_dir_1(file, env, exclude);
-if(exclude.find(file)==exclude.end())writer_file_7(file, env, exclude);
-if(exclude.find(file)==exclude.end())writer_dir_2(file, env, exclude);
-if(exclude.find(file)==exclude.end())writer_dir_3(file, env, exclude);
+if(exclude.find("build.sh")==exclude.end())writer_file_0(file, env, exclude);
+if(exclude.find("LICENCE.md")==exclude.end())writer_file_1(file, env, exclude);
+if(exclude.find(".gitignore")==exclude.end())writer_file_2(file, env, exclude);
+if(exclude.find("meson.build")==exclude.end())writer_file_3(file, env, exclude);
+if(exclude.find("README.md")==exclude.end())writer_file_4(file, env, exclude);
+if(exclude.find("subprojects")==exclude.end())writer_dir_1(file, env, exclude);
+if(exclude.find("meson.options")==exclude.end())writer_file_7(file, env, exclude);
+if(exclude.find("man")==exclude.end())writer_dir_2(file, env, exclude);
+if(exclude.find("platforms")==exclude.end())writer_dir_3(file, env, exclude);
 fs::permissions(file,fs::perms(perms), fs::perm_options::replace);
 return WRITER_STATUS_OK;
 }
 
 void g_inits(){
   TIME::initialize();
+fs_tree.emplace("build.sh",writer_file_0);fs_tree.emplace("LICENCE.md",writer_file_1);fs_tree.emplace(".gitignore",writer_file_2);fs_tree.emplace("meson.build",writer_file_3);fs_tree.emplace("README.md",writer_file_4);fs_tree.emplace("subprojects/pugixml.wrap",writer_file_5);fs_tree.emplace("subprojects/miniz.wrap",writer_file_6);fs_tree.emplace("subprojects",writer_dir_1);fs_tree.emplace("meson.options",writer_file_7);fs_tree.emplace("man/page.1",writer_file_8);fs_tree.emplace("man",writer_dir_2);fs_tree.emplace("platforms/default.ini",writer_file_9);fs_tree.emplace("platforms/zig-wasm32.ini",writer_file_10);fs_tree.emplace("platforms/cosmopolitan.ini",writer_file_11);fs_tree.emplace("platforms",writer_dir_3);fs_tree.emplace(".",writer_dir_0);
 }
 
 #ifndef TE4_INTERNAL

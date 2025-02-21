@@ -289,7 +289,7 @@ generate_folder_function(ctx_t &ctx, const fs::path &source,
                          const std::set<fs::path> &exclude_ext = {}) {
   static int counter = 0;
   std::string name = std::format("writer_dir_{}", counter++);
-  std::vector<std::string> callthese;
+  std::vector<std::pair<fs::path, std::string>> callthese;
   for (const auto &entry : fs::directory_iterator(source)) {
     if (!entry.is_regular_file() && !entry.is_symlink() &&
         !entry.is_directory()) {
@@ -306,7 +306,7 @@ generate_folder_function(ctx_t &ctx, const fs::path &source,
       if (t.first == WRITER_STATUS_ERROR)
         return {WRITER_STATUS_ERROR, ""};
       else
-        callthese.push_back(t.second);
+        callthese.push_back({fs::relative(entry, ctx.BASE), t.second});
       continue;
     }
 
@@ -316,7 +316,7 @@ generate_folder_function(ctx_t &ctx, const fs::path &source,
       if (t.first == WRITER_STATUS_ERROR)
         return {WRITER_STATUS_ERROR, ""};
       else
-        callthese.push_back(t.second);
+        callthese.push_back({fs::relative(entry, ctx.BASE), t.second});
       continue;
     }
 
@@ -326,7 +326,7 @@ generate_folder_function(ctx_t &ctx, const fs::path &source,
       if (t.first == WRITER_STATUS_ERROR)
         return {WRITER_STATUS_ERROR, ""};
       else
-        callthese.push_back(t.second);
+        callthese.push_back({fs::relative(entry, ctx.BASE), t.second});
       continue;
     }
 
@@ -334,7 +334,7 @@ generate_folder_function(ctx_t &ctx, const fs::path &source,
     if (t.first == WRITER_STATUS_ERROR)
       return {WRITER_STATUS_ERROR, ""};
     else
-      callthese.push_back(t.second);
+      callthese.push_back({fs::relative(entry, ctx.BASE), t.second});
   }
 
   ctx.out << std::format(
@@ -352,7 +352,8 @@ generate_folder_function(ctx_t &ctx, const fs::path &source,
   ctx.out << "fs::create_directories(file);\n";
   for (auto fn : callthese) {
     ctx.out << std::format(
-        "if(exclude.find(file)==exclude.end()){}(file, env, exclude);\n", fn);
+        "if(exclude.find(\"{}\")==exclude.end()){}(file, env, exclude);\n",
+        escape_c_str(fn.first), fn.second);
   }
 
   ctx.out
@@ -419,7 +420,7 @@ int main(int argc, char *argv[]) {
       no_override = false;
       break;
     case 's':
-      no_bundle = false;
+      no_bundle = true;
       break;
     case 'h':
     case '?':
@@ -757,6 +758,9 @@ std::map<fs::path, writer_status_t(*)(const fs::path& dir, const env_t& env, con
         R"(
 void g_inits(){
   TIME::initialize();
+)";
+    ctx.out << ctx.fn_table.str();
+    ctx.out << R"(
 }
 
 #ifndef TE4_INTERNAL
@@ -791,9 +795,14 @@ int main(int argc, const char* argv[]){
 
     // Check to only generate the main.cpp, used only internally when running
     // freezerplate on itself.
-    if (!no_bundle)
-      writer_dir_0(dest_folder, doc.root());
-
+    if (!no_bundle) {
+      writer_dir_0(dest_folder, doc.root(), {"man/page.1"});
+      fs_tree.at("man/page.1")(
+          fs::path(dest_folder) / "man", doc.root(), {},
+          std::string(
+              doc.child("project").attribute("name").as_string("undefined")) +
+              ".1");
+    }
     ctx.out << R"(
     return 0;
 }

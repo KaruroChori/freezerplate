@@ -36,10 +36,12 @@ I would advise against.
 ## General workflow?
 
 - Make sure all your relevant files are in a single folder (you can nest as much as you want, or as much as your stack can take, whichever gives up first)
-- Introduce code blocks in the source files via `<?` `?>`, embedding any arbitrary C++ code within your files. You are given access to an XML environment file to use as you wish and some [helpers](./docs/templating.md).
+- Introduce code blocks in the source files via `<?` `?>`, embedding any arbitrary C++ code within your files. You are given access to an XML environment file to use as you wish and some helpers.
 - Compile your templates in as standalone (and optionally compressed) generator.
 - (optional) Customize the `body` and `head` files if extra features are wanted.
 - Profit!
+
+More in-depth documentation in the [dedicated page](./docs/for-users.md).
 
 ### Usage
 
